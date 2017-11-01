@@ -1,12 +1,12 @@
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef LIB_GRAPH_H
+#define LIB_GRAPH_H
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <list.h>
+#include "libList.h"
 #include <log.h>
 
 typedef struct _graph{

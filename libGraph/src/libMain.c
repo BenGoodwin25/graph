@@ -1,7 +1,9 @@
-#include "menu.h"
+#include <libMenu.h>
 
+/*
 int main() {
   Graph graph = {0};
   startMenu(&graph);
   return 0;
 }
+ */

@@ -1,4 +1,4 @@
-#include "menu.h"
+#include <libMenu.h>
 
 void flushReadBuffer() {
   int c = 0;
