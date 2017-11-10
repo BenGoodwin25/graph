@@ -2,7 +2,7 @@
 
 int main() {
   Graph source = {0};
-  load_graph(&source,"../mon.graph");
+  load_graph(&source,"./mon.graph");
   Graph destination = {0};
   int errorCode = copyGraph(&source,&destination);
   view_graph(&source);
