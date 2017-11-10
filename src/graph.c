@@ -1,9 +1,11 @@
 #include <graph.h>
+#include <stdio.h>
 
-size_t copyGraph(Graph *source, Graph **destination){
-  int error;
-  error = save_graph(&source, "tmpGraph");
-  error += load_graph(&destination,"tmpGraph");
+size_t copyGraph(Graph *source, Graph *destination){
+  size_t error;
+  error = save_graph(source, "tmpGraph");
+  error += load_graph(destination,"tmpGraph");
+  unlink("tmpGraph");
   return error;
 }
 
