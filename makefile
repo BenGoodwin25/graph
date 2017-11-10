@@ -21,10 +21,10 @@ EXECSRC=$(wildcard $(SRCDIR)/*.c)
 EXECOBJ=$(EXECSRC:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
 #Compile all targets
-all: $(LIBDIR) $(OBJDIR) $(BINDIR) $(EXEC)
+all: $(LIBDIR) $(OBJDIR) $(BINDIR) compilelib $(EXEC)
 
 #Compile the main exec
-$(EXEC): $(EXECOBJ) $(LIBGRAPH) $(LIBLIST)
+$(EXEC): $(EXECOBJ)
 	$(COMPILER) -static -o $@ $(EXECOBJ) $(CFLAGS) $(LFLAGS) -L$(LIBDIR) -lgraph -llist -I $(INCDIR) -I $(LIBINCLUDE)
 
 #Creating static graph lib
@@ -42,17 +42,9 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.c $(SRCDIR)/%.h
 $(OBJDIR)/%.o : $(SRCDIR)/%.c
 	$(COMPILER) -c $< $(CFLAGS) -o $(OBJDIR)/$*.o -I $(INCDIR) -I $(LIBINCLUDE)
 
-#Rule for compiling lib graph files
-$(OBJDIR)/libgraph/%.o : $(GRAPHSRCDIR)/%.c $(GRAPHSRCDIR)/%.h
-	$(COMPILER) -c $< $(CFLAGS) -o $(OBJDIR)/libgraph/$*.o -I $(INCDIR) -I $(LIBINCLUDE)
-
-#Rule for compiling lib list files
-$(OBJDIR)/liblist/%.o : $(LISTSRCDIR)/%.c $(LISTSRCDIR)/%.h
-	$(COMPILER) -c $< $(CFLAGS) -o $(OBJDIR)/liblist/$*.o -I $(INCDIR) -I $(LIBINCLUDE)
-
 #Rule libgraph
-makelib :
-	make libGraph
+compilelib :
+	cd libGraph && make
 	
 #Creation of folders
 $(OBJDIR) :

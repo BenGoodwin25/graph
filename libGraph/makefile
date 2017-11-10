@@ -8,9 +8,9 @@ CFLAGS=-g -Wall -Wextra -std=c11 -O0
 LFLAGS=
 
 #Directories for main app
-BINDIR=./bin
-LIBDIR=./lib
-OBJDIR=./obj
+BINDIR=../bin
+LIBDIR=../lib
+OBJDIR=../obj
 SRCDIR=./src
 INCDIR=./include
 GRAPHSRCDIR=$(SRCDIR)/libgraph
