@@ -6,12 +6,8 @@ int main() {
   load_graph(&source,"./mon.graph");
   Graph destination = {0};
   int errorCode = copyGraph(&source,&destination);
-  delete_graph(&source);
-  view_graph(&source);
   LOG_INFO("Error code of copy : %d\n",errorCode);
   view_graph(&destination);
-
-
   Matrix m;
   create_matrix(&m,4,false);
   m.neighbour[2][2]=7;
