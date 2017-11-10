@@ -24,33 +24,20 @@ EXECOBJ=$(EXECSRC:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 all: $(LIBDIR) $(OBJDIR) $(BINDIR) compilelib $(EXEC)
 
 #Compile the main exec
-$(EXEC): $(EXECOBJ)
+$(EXEC): $(EXECOBJ) compilelib
 	$(COMPILER) -static -o $@ $(EXECOBJ) $(CFLAGS) $(LFLAGS) -L$(LIBDIR) -lgraph -llist -I $(INCDIR) -I $(LIBINCLUDE)
 
-#Creating static graph lib
-$(LIBGRAPH) : $(LIBGRAPHOBJ) $(LIBLIST)
-	$(ARCHIVER) rcs $@ $(LIBGRAPHOBJ)
-
-#Creating static list lib
-$(LIBLIST) : $(LIBLISTOBJ)
-	$(ARCHIVER) rcs $@ $^
-
 #Rules for compiling main exec files
-$(OBJDIR)/%.o : $(SRCDIR)/%.c $(SRCDIR)/%.h
-	$(COMPILER) -c $< $(CFLAGS) -o $(OBJDIR)/$*.o -I $(INCDIR) -I $(LIBINCLUDE)
-
 $(OBJDIR)/%.o : $(SRCDIR)/%.c
 	$(COMPILER) -c $< $(CFLAGS) -o $(OBJDIR)/$*.o -I $(INCDIR) -I $(LIBINCLUDE)
 
 #Rule libgraph
 compilelib :
-	cd libGraph && make
-	
+	cd libGraph && make && cd ../
+
 #Creation of folders
 $(OBJDIR) :
 	mkdir -p $(OBJDIR)
-	mkdir -p $(OBJDIR)/libgraph
-	mkdir -p $(OBJDIR)/liblist
 
 $(BINDIR) :
 	mkdir -p $(BINDIR)

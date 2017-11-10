@@ -24,12 +24,12 @@ EXECOBJ=$(EXECSRC:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 #Defining libgraph vars
 LIBGRAPH=$(LIBDIR)/libgraph.a
 LIBGRAPHSRC=$(wildcard $(GRAPHSRCDIR)/*.c)
-LIBGRAPHOBJ=$(LIBGRAPHSRC:$(GRAPHSRCDIR)/%.c=$(OBJDIR)/libgraph/%.o)
+LIBGRAPHOBJ=$(LIBGRAPHSRC:$(GRAPHSRCDIR)/%.c=$(OBJDIR)/%.o)
 
 #Defining liblist vars
 LIBLIST=$(LIBDIR)/liblist.a
 LIBLISTSRC=$(wildcard $(LISTSRCDIR)/*.c)
-LIBLISTOBJ=$(LIBLISTSRC:$(LISTSRCDIR)/%.c=$(OBJDIR)/liblist/%.o)
+LIBLISTOBJ=$(LIBLISTSRC:$(LISTSRCDIR)/%.c=$(OBJDIR)/%.o)
 
 #Compile all targets
 all: $(LIBDIR) $(OBJDIR) $(BINDIR) $(EXEC)
@@ -47,25 +47,20 @@ $(LIBLIST) : $(LIBLISTOBJ)
 	$(ARCHIVER) rcs $@ $^
 
 #Rules for compiling main exec files
-$(OBJDIR)/%.o : $(SRCDIR)/%.c $(SRCDIR)/%.h
-	$(COMPILER) -c $< $(CFLAGS) -o $(OBJDIR)/$*.o -I $(INCDIR)
-
 $(OBJDIR)/%.o : $(SRCDIR)/%.c
 	$(COMPILER) -c $< $(CFLAGS) -o $(OBJDIR)/$*.o -I $(INCDIR)
 
 #Rule for compiling lib graph files
-$(OBJDIR)/libgraph/%.o : $(GRAPHSRCDIR)/%.c $(GRAPHSRCDIR)/%.h
-	$(COMPILER) -c $< $(CFLAGS) -o $(OBJDIR)/libgraph/$*.o -I $(INCDIR)
+$(OBJDIR)/%.o : $(GRAPHSRCDIR)/%.c
+	$(COMPILER) -c $< $(CFLAGS) -o $(OBJDIR)/$*.o -I $(INCDIR)
 
 #Rule for compiling lib list files
-$(OBJDIR)/liblist/%.o : $(LISTSRCDIR)/%.c $(LISTSRCDIR)/%.h
-	$(COMPILER) -c $< $(CFLAGS) -o $(OBJDIR)/liblist/$*.o -I $(INCDIR)
+$(OBJDIR)/%.o : $(LISTSRCDIR)/%.c
+	$(COMPILER) -c $< $(CFLAGS) -o $(OBJDIR)/$*.o -I $(INCDIR)
 
 #Creation of folders
 $(OBJDIR) :
 	mkdir -p $(OBJDIR)
-	mkdir -p $(OBJDIR)/libgraph
-	mkdir -p $(OBJDIR)/liblist
 
 $(BINDIR) :
 	mkdir -p $(BINDIR)
