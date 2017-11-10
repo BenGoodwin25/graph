@@ -2,8 +2,8 @@
 
 size_t copyGraph(Graph *source, Graph **destination){
   int error;
-  error = save_graph(source, "tmpGraph");
-  error += load_graph(destination,"tmpGraph");
+  error = save_graph(&source, "tmpGraph");
+  error += load_graph(&destination,"tmpGraph");
   return error;
 }
 

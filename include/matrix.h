@@ -1,6 +1,7 @@
 #ifndef GRAPH_MATRIX_H
 #define GRAPH_MATRIX_H
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -23,7 +24,7 @@ typedef struct _matrix{
  *
  * Return :
  *  error code 0 : create correctly executed
- *  error code 1 : create could'nt be executed
+ *  error code 1 : create couldn't be executed
  *  error code 20 : function not yet implemented
  */
 size_t create_matrix(Matrix *self, size_t maxNodes, bool isDirected);
