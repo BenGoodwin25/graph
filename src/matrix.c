@@ -14,10 +14,18 @@ size_t create_matrix(Matrix *self, size_t maxNodes, bool isDirected){
     return 1;
   }
 
-  for(size_t i=0; i < maxNodes; i++){
-
+  for(size_t i=1; i < maxNodes; i++){
     self->neighbour[i]=self->neighbour[i-1]+maxNodes;
+    if(self->neighbour[i] == NULL){
+      LOG_ERROR("Unexpected allocation error while creation of the matrix.\n");
+      return 1;
+    }
+  }
 
+  for(size_t i=0; i < self->maxNodes; i++){
+    for(size_t f=0; f < self->maxNodes; f++){
+      self->neighbour[i][f] = -1;
+    }
   }
   return 0;
 }
@@ -28,7 +36,8 @@ size_t delete_matrix(Matrix *self){
       self->neighbour[i][f] = NULL;
     }
   }
+  free(self->neighbour[0]);
   free(self->neighbour);
-  return 0;
+  return 20;
 }
 
