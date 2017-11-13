@@ -33,7 +33,7 @@ size_t create_matrix(Matrix *self, size_t maxNodes, bool isDirected){
 size_t delete_matrix(Matrix *self){
   for(size_t i=0; i < self->maxNodes; i++){
     for(size_t f=0; f < self->maxNodes; f++){
-      self->neighbour[i][f] = NULL;
+      self->neighbour[i][f] = -1;
     }
   }
   free(self->neighbour[0]);

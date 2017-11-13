@@ -13,7 +13,7 @@ int main() {
   m.neighbour[2][2]=7;
   LOG_INFO("before delete : %zu\n",m.neighbour[2][2]);
   delete_matrix(&m);
-  assert(!(m.neighbour[2][2] == 7));
+  assert(m.neighbour[2][2] == -1);
 
 
   delete_graph(&source);
