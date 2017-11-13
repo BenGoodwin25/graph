@@ -1,5 +1,4 @@
 #include <graph.h>
-#include <stdio.h>
 
 size_t copyGraph(Graph *source, Graph *destination){
   size_t error;
@@ -60,6 +59,10 @@ size_t listPairs(size_t *V, size_t *currentListOfPairs, size_t *listsOfPairs){
 }
 
 size_t outputResultsToStream(size_t *self, FILE *stream){
+  /*
+  H(1) = 40 : 1 --(20)--> 2 --(10)--> 3 --(10)--> 4
+  H(2) = 60 : 1 --(30)--> 3 --(10)--> 2 --(20)--> 4
+  */
   return 20;
 }
 
