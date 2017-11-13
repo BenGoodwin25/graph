@@ -24,7 +24,7 @@ size_t Floyd_Warshall(Graph *g, Matrix **self, Matrix **predecessor){
   return 20;
 }
 
-size_t minLengthPairwise(size_t *V,size_t *bestMatching, size_t *bestMatchingWeight){
+size_t minLengthPairwise(size_t *V, List *bestMatching, List *bestMatchingWeight){
   /*
   bestMatching ← NULL;
   bestMatchingWeight ← +∞;
@@ -43,7 +43,7 @@ size_t minLengthPairwise(size_t *V,size_t *bestMatching, size_t *bestMatchingWei
 }
 
 
-size_t listPairs(size_t *V, size_t *currentListOfPairs, size_t *listsOfPairs){
+size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs){
   /*
   if (V = ∅){
     listsOfPairs ← listsOfPairs+currentListOfPairs;

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
+#include <list.h>
 #include <matrix.h>
 #include <libGraph.h>
 
@@ -48,7 +49,7 @@ size_t Floyd_Warshall(Graph *G, Matrix **self, Matrix **predecessor);
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-size_t minLengthPairwise(size_t *V,size_t *bestMatching, size_t *bestMatchingWeight);
+size_t minLengthPairwise(size_t *V,List *bestMatching, List *bestMatchingWeight);
 
 /*
  * Function :
@@ -64,7 +65,7 @@ numbers
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-size_t listPairs(size_t *V, size_t *currentListOfPairs, size_t *listsOfPairs);
+size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs);
 
 /*
  * Function : output result to stream (stdout, FILE)
