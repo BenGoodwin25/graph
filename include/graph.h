@@ -68,6 +68,20 @@ numbers
 size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs);
 
 /*
+ * Function : get Eulerian circuit, display it and write it on a file
+ *
+ * Param :
+ *  self : graph to get Eulerian circuit
+ *  h : heuristic to use 1,2,3 ... 0 is all
+ *
+ * Return :
+ *  error code 0 : create correctly executed
+ *  error code 1 : create couldn't be executed
+ *  error code 20 : function not yet implemented
+ */
+size_t getEulerianCircuit(Graph *self, size_t h);
+
+/*
  * Function : output result to stream (stdout, FILE)
  *
  * Param :

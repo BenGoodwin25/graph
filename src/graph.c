@@ -58,6 +58,15 @@ size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs){
   return 20;
 }
 
+size_t getEulerianCircuit(Graph *self, size_t h){
+  /*FILE name;
+  size_t error=0;
+  error+=outputResultsToStream(self, &name);
+  error+=displayResults(self);
+  return error;*/
+  return 20;
+};
+
 size_t outputResultsToStream(size_t *self, FILE *stream){
   /*
   H(1) = 40 : 1 --(20)--> 2 --(10)--> 3 --(10)--> 4
