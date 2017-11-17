@@ -18,6 +18,8 @@ void printMainMenu(){
   printf("#  %d : Save Graph to file\n", SAVE_GRAPH);
   printf("#  %d : Delete Graph\n", DELETE_GRAPH);
   printf("#  %d : Quit (and delete Graph)\n", QUIT);
+  printf("# ===============================\n");
+  printf("#  %d : Compute Eulerian Circuit\n", COMPUTE_EULERIAN_CIRCUIT);
   printf("\n");
 }
 
@@ -74,8 +76,11 @@ int readInputMainMenu(Graph *graph){
         delete_graph(graph);
         return 1;
         break;
+      case COMPUTE_EULERIAN_CIRCUIT:
+        readEulerianCircuit();
+        break;
       default:
-        fputs("# Please make a choice between 0 and 10\n", stdout);
+        fputs("# Please make a choice between 0 and 11\n", stdout);
         break;
     }
   } else {
@@ -290,4 +295,8 @@ void createExampleGraph(Graph *graph){
   add_edge(graph, 2, 7, 8, 0, true);
   add_edge(graph, 4, 7, 3, 0, true);
   printf("# Example graph created!\n");
+}
+
+void readEulerianCircuit() {
+  printf("# Eulerian Circuit!");
 }

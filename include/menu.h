@@ -19,6 +19,7 @@
 #define SAVE_GRAPH 8
 #define DELETE_GRAPH 9
 #define QUIT 10
+#define COMPUTE_EULERIAN_CIRCUIT 11
 
 // Main menu
 void printMainMenu();
@@ -38,5 +39,8 @@ void readNewEdge(Graph *graph);
 void readDeleteNode(Graph *graph);
 void readDeleteEdge(Graph *graph);
 void createExampleGraph(Graph *graph);
+
+// read user inputs for eulerian circuit
+void readEulerianCircuit();
 
 #endif

@@ -2,7 +2,7 @@
 #include <menu.h>
 #include <eulerian.h>
 
-//*
+/*
 int main() {
   Graph source = {0};
   load_graph(&source,"./mon.graph");
@@ -25,7 +25,7 @@ int main() {
 }
 //*/
 
-/*
+//*
 int main() {
   Graph graph = {0};
   startMenu(&graph);
