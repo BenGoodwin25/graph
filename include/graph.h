@@ -1,111 +1,51 @@
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef LIB_GRAPH_H
+#define LIB_GRAPH_H
 
+#include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <list.h>
-#include <matrix.h>
-#include <libGraph.h>
+#include <log.h>
 
-/*
- * Function : duplicate a graph to do efficient work on it
- *
- * Param :
- *  source : the source graph to duplicate
- *  destination : the destination graph to duplicate
- *
- * Return :
- *  error code 0 : copy correctly executed
- *  error code 1 : copy could not be done
- *  error code 20 : function not yet implemented
- */
-size_t copyGraph(Graph *source, Graph *destination);
+typedef struct _graph{
+  bool isDirected;
+  size_t nbMaxNodes;
+  Neighbour **adjList;
+} Graph;
 
-/*
- * Function :
- *
- * Param :
- *  G : a graph
- *  self : matrix such that M(x, y) gives the shortest distance between nodes x and y
- *  predecessor : matrix such that P rec(x, y) gives the predecessor of y on the shortest path form x
- *
- * Return :
- *  error code 0 : function correctly executed
- *  error code 1 : function couldn't be done
- *  error code 20 : function not yet implemented
- */
-size_t Floyd_Warshall(Graph *G, Matrix **self, Matrix **predecessor);
+//create a graph with the right number of nodes
+int create_graph(Graph *self, size_t maxNodes, bool isDirected);
 
-/*
- * Function : Minimal-length Pairwise Matching by Enumeration
- *
- * Param :
- *  V : list of odd degree nodes sorted by node numbe
- *  bestMaching : the minimal-length pairwise matching of V nodes
- *  bestMachingWeight : the total weight of this minimal-length pairwise matching
- *
- * Return :
- *  error code 0 : function correctly executed
- *  error code 1 : function couldn't be done
- *  error code 20 : function not yet implemented
- */
-size_t minLengthPairwise(size_t *V,List *bestMatching, List *bestMatchingWeight);
+//load a graph from a file
+int load_graph(Graph *self, const char *graphFile);
 
-/*
- * Function :
- *
- * Param :
- *  V :  the set of nodes to match by pairs (must have an even number of elements), ordered by node
-numbers
- *  currentListOfPairs : the current list of pairs under construction
- *  listsOfPairs :  The list (initially empty) of all the possible list of pairs
- *
- * Return :
- *  error code 0 : function correctly executed
- *  error code 1 : function couldn't be done
- *  error code 20 : function not yet implemented
- */
-size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs);
+//add a node
+int add_node(Graph *self, int nodeName);
 
-/*
- * Function : get Eulerian circuit, display it and write it on a file
- *
- * Param :
- *  self : graph to get Eulerian circuit
- *  h : heuristic to use 1,2,3 ... 0 is all
- *
- * Return :
- *  error code 0 : create correctly executed
- *  error code 1 : create couldn't be executed
- *  error code 20 : function not yet implemented
- */
-size_t getEulerianCircuit(Graph *self, size_t h);
+//add an edge
+int add_edge(Graph *self, int fromName, int toName, int edgeName, int Weight, bool isSymmetric);
 
-/*
- * Function : output result to stream (stdout, FILE)
- *
- * Param :
- *  self :  The result to output
- *  stream : output stream
- *
- * Return :
- *  error code 0 : function correctly executed
- *  error code 1 : function couldn't be done
- *  error code 20 : function not yet implemented
- */
-size_t outputResultsToStream(size_t *self, FILE *stream);
+// Check if a node already exists (true if exists)
+bool is_node_exists(Graph* self, int nodeName);
 
-/*
- * Function : output result to stdout, call of outputResultsToStream()
- *
- * Param :
- *  self :  The result to display
- *
- * Return :
- *  error code 0 : function correctly executed
- *  error code 1 : function couldn't be done
- *  error code 20 : function not yet implemented
- */
-size_t displayResults(size_t *self);
+// Check if an edge already exists (true if exists)
+bool is_edge_exists(Graph* self, int edgeName);
 
-#endif //GRAPH_GRAPH_H
+//Delete a node
+int remove_node(Graph *self, int nodeName);
+
+//Delete an edge
+int remove_edge(Graph *self, int edgeName);
+
+//Display a graph
+int view_graph(Graph *self);
+
+//Save the graph into a file
+int save_graph(Graph *self, const char *fileName);
+
+//Free graph and quit
+int delete_graph(Graph *self);
+
+#endif

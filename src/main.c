@@ -1,6 +1,8 @@
 #include <graph.h>
+#include <menu.h>
+#include <eulerian.h>
 
-
+//*
 int main() {
   Graph source = {0};
   load_graph(&source,"./mon.graph");
@@ -21,4 +23,12 @@ int main() {
 
   return 0;
 }
+//*/
 
+/*
+int main() {
+  Graph graph = {0};
+  startMenu(&graph);
+  return 0;
+}
+//*/

@@ -1,7 +1,7 @@
 #ifndef LIB_MENU_H
 #define LIB_MENU_H
 
-#include "libGraph.h"
+#include <graph.h>
 
 #define MAX_PATH_LENGTH 256
 #define MAX_DIGIT_LENGTH 10

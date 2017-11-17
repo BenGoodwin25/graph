@@ -1,4 +1,4 @@
-#include <libList.h>
+#include <list.h>
 
 bool edgeExist(Neighbour *self, int edgeName){
   Neighbour *tmp;

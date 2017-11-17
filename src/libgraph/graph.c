@@ -1,4 +1,4 @@
-#include <libGraph.h>
+#include <graph.h>
 
 bool is_node_oob(Graph *self, size_t nodeName){
   return self->nbMaxNodes < nodeName;

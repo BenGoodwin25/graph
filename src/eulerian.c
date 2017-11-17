@@ -1,4 +1,4 @@
-#include <graph.h>
+#include <eulerian.h>
 
 size_t copyGraph(Graph *source, Graph *destination){
   size_t error;
