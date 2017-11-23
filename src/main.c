@@ -25,10 +25,22 @@ int main() {
 }
 //*/
 
-//*
+/*
 int main() {
   Graph graph = {0};
   startMenu(&graph);
   return 0;
+}
+//*/
+
+//*
+int main() {
+  Graph graph = {0};
+  createExampleGraph(&graph);
+  Matrix *m0;
+  Matrix *m1;
+  create_matrix(m0, graph.nbMaxNodes, graph.isDirected);
+  create_matrix(m1, graph.nbMaxNodes, graph.isDirected);
+  Floyd_Warshall(&graph, m0, m1);
 }
 //*/

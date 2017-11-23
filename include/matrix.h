@@ -10,7 +10,7 @@
 
 typedef struct _matrix{
   size_t maxNodes;
-  ssize_t **neighbour;
+  ssize_t **value;
   bool isDirected;
 } Matrix;
 
