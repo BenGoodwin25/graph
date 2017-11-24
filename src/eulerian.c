@@ -36,7 +36,10 @@ size_t Floyd_Warshall(Graph *g, Matrix *self, Matrix *predecessor){
   for(size_t i = 0; i < self->maxNodes; i++) {
     for(size_t j = 0; j < self->maxNodes; j++) {
       for (size_t k = 0; k < self->maxNodes; k++) {
-        if(self->value[j][i] != -1 && self->value[i][k] != -1 && self->value[j][i] + self->value[i][k] < self->value[j][k]) {
+        if(self->value[j][i] != -1
+            && self->value[i][k] != -1
+            && self->value[j][i] + self->value[i][k] < self->value[j][k])
+        {
           self->value[j][k] = self->value[j][i] + self->value[i][k];
           predecessor->value[j][k] = predecessor->value[i][k];
         }
@@ -82,12 +85,22 @@ size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs){
   return 20;
 }
 
-size_t getEulerianCircuit(Graph *self, size_t h){
+size_t getEulerianCircuit(Graph *self, int heuristic){
   /*FILE name;
   size_t error=0;
   error+=outputResultsToStream(self, &name);
   error+=displayResults(self);
   return error;*/
+  if(heuristic == 0 ) {
+    // TODO: Do all heuristics
+  }
+  if(heuristic == 1) {
+    Matrix *m0 = malloc(sizeof(Matrix));
+    Matrix *m1 = malloc(sizeof(Matrix));
+    create_matrix(m0, self->nbMaxNodes, self->isDirected);
+    create_matrix(m1, self->nbMaxNodes, self->isDirected);
+    Floyd_Warshall(self, m0, m1);
+  }
   return 20;
 };
 

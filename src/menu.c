@@ -288,15 +288,34 @@ void createExampleGraph(Graph *graph){
   add_node(graph, 6);
   add_node(graph, 7);
   add_node(graph, 8);
-  add_edge(graph, 1, 7, 1, 0, true);
-  add_edge(graph, 1, 3, 2, 0, true);
-  add_edge(graph, 1, 4, 5, 0, true);
-  add_edge(graph, 2, 5, 4, 0, true);
-  add_edge(graph, 2, 7, 8, 0, true);
-  add_edge(graph, 4, 7, 3, 0, true);
+  add_edge(graph, 1, 7, 1, 2, true);
+  add_edge(graph, 1, 3, 2, 1, true);
+  add_edge(graph, 1, 4, 5, 5, true);
+  add_edge(graph, 2, 5, 4, 3, true);
+  add_edge(graph, 2, 7, 8, 9, true);
+  add_edge(graph, 4, 7, 3, 4, true);
   printf("# Example graph created!\n");
 }
 
-void readEulerianCircuit() {
+void readEulerianCircuit(Graph *graph) {
+  char heuristicInput[MAX_DIGIT_LENGTH];
+  int heuristic = -1;
+  int error = -1;
+  while(error != 0) {
+    printHeuristicChoice();
+    error = readUserInput(heuristicInput, MAX_DIGIT_LENGTH+1);
+  }
+  if(sscanf(heuristicInput, "%d", &heuristic) != 1){
+    LOG_ERROR_INT_CONVERT();
+    printf("# Can't determine which heuristic to use.\n");
+    return;
+  }
+  getEulerianCircuit(graph, heuristic);
   printf("# Eulerian Circuit!");
+}
+
+void printHeuristicChoice() {
+  printf("# Which heuristic do you want to use ?\n");
+  printf("# 0 : Use successfully each heuristic.\n");
+  printf("# 1 : Floyd-Warshall algorithm.\n");
 }
