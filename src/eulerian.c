@@ -9,15 +9,16 @@ size_t copyGraph(Graph *source, Graph *destination){
 }
 
 void print_matrix(Matrix *self){
+  printf("%zu maxNodes\n", self->maxNodes);
   for(size_t i = 0; i < self->maxNodes; i++) {
     for(size_t j = 0; j < self->maxNodes; j++) {
-      printf("%zu", self->value[i][j]);
+      printf("|%zd", self->value[i][j]);
     }
-    printf("\n");
+    printf("|\n");
   }
 }
 
-size_t Floyd_Warshall(Graph *g, Matrix **self, Matrix **predecessor){
+size_t Floyd_Warshall(Graph *g, Matrix *self, Matrix *predecessor){
   /*
   for each node z ∈ V {
     for each node x ∈ V {
@@ -30,7 +31,20 @@ size_t Floyd_Warshall(Graph *g, Matrix **self, Matrix **predecessor){
     }
   }
   */
-  print_matrix(*self);
+  print_matrix(self);
+  print_matrix(predecessor);
+  for(size_t i = 0; i < self->maxNodes; i++) {
+    for(size_t j = 0; j < self->maxNodes; j++) {
+      for (size_t k = 0; k < self->maxNodes; k++) {
+        if(self->value[j][i] != -1 && self->value[i][k] != -1 && self->value[j][i] + self->value[i][k] < self->value[j][k]) {
+          self->value[j][k] = self->value[j][i] + self->value[i][k];
+          predecessor->value[j][k] = predecessor->value[i][k];
+        }
+      }
+    }
+  }
+  print_matrix(self);
+  print_matrix(predecessor);
   return 20;
 }
 
