@@ -43,4 +43,18 @@ size_t create_matrix(Matrix *self, size_t maxNodes, bool isDirected);
  */
 size_t delete_matrix(Matrix *self);
 
+/*
+ * Function : creation of a predecessor matrix
+ *
+ * Param :
+ *  self : the matrix to create
+ *  predecessor : the predecessor matrix of self
+ *
+ * Return :
+ *  error code 0 : predecessor correctly executed
+ *  error code 1 : predecessor couldn't be executed
+ *  error code 20 : function not yet implemented
+ */
+size_t create_predecessor(Matrix *self, Matrix *predecessor);
+
 #endif //GRAPH_MATRIX_H
