@@ -25,7 +25,7 @@ int main() {
 }
 //*/
 
-/*
+//*
 int main() {
   Graph graph = {0};
   startMenu(&graph);
@@ -45,12 +45,10 @@ int main() {
 }
 //*/
 
-//*
+/*
 int main() {
-  size_t result = 10;
   Graph graph = {0};
   createExampleEulerian(&graph);
-  isEulerian(&graph, &result);
-  printf("Eulerian result : %zu.\n", result);
+  getEulerianCircuit(&graph, 0);
 }
 //*/

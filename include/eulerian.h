@@ -7,6 +7,10 @@
 #include <matrix.h>
 #include <graph.h>
 
+#define GRAPH_EULERIAN 0
+#define GRAPH_HALF_EULERIAN 1
+#define GRAPH_NON_EULERIAN 2
+
 /*
  * Function : duplicate a graph to do efficient work on it
  *

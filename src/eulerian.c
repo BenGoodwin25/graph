@@ -91,9 +91,25 @@ size_t getEulerianCircuit(Graph *self, int heuristic){
   error+=outputResultsToStream(self, &name);
   error+=displayResults(self);
   return error;*/
+  size_t result = 10;
+  isEulerian(self, &result);
+  switch (result) {
+    case GRAPH_EULERIAN:
+      printf("# The graph is eulerian.\n");
+      break;
+    case GRAPH_HALF_EULERIAN:
+      printf("# The graph is half eulerian.\n");
+      break;
+    case GRAPH_NON_EULERIAN:
+      printf("# The graph isn't eulerian.\n");
+      break;
+    default:
+      break;
+  }
   if(heuristic == 0 ) {
     // TODO: Do all heuristics
   }
+  /*
   if(heuristic == 1) {
     Matrix *m0 = malloc(sizeof(Matrix));
     Matrix *m1 = malloc(sizeof(Matrix));
@@ -101,6 +117,7 @@ size_t getEulerianCircuit(Graph *self, int heuristic){
     create_matrix(m1, self->nbMaxNodes, self->isDirected);
     Floyd_Warshall(self, m0, m1);
   }
+  */
   return 20;
 };
 
@@ -234,6 +251,7 @@ void createExampleNonEulerian(Graph *self) {
   add_edge(self, 10, 11, 14, 50, false);
   add_edge(self, 10, 12, 15, 2, false);
   add_edge(self, 11, 12, 16, 3, false);
+  printf("# Example non eulerian graph created!\n");
 }
 
 void createExampleHalfEulerian(Graph *self) {
@@ -254,6 +272,7 @@ void createExampleHalfEulerian(Graph *self) {
   add_edge(self, 4, 5, 7, 1, false);
   add_edge(self, 4, 6, 8, 1, false);
   add_edge(self, 5, 6, 9, 1, false);
+  printf("# Example half eulerian graph created!\n");
 }
 
 void createExampleEulerian(Graph *self) {
@@ -282,4 +301,5 @@ void createExampleEulerian(Graph *self) {
   add_edge(self, 6, 8, 11, 1, false);
   add_edge(self, 7, 8, 12, 1, false);
   add_edge(self, 9, 10, 13, 1, false);
+  printf("# Example eulerian graph created!\n");
 }

@@ -3,6 +3,7 @@
 
 #include <graph.h>
 #include <matrix.h>
+#include <eulerian.h>
 
 #define MAX_PATH_LENGTH 256
 #define MAX_DIGIT_LENGTH 10
@@ -32,6 +33,7 @@ int readUserInput(char *dest, int length);
 void flushReadBuffer();
 
 // read user inputs for action on graph
+void readCreateExampleGraph(Graph *graph);
 void readCreateGraph(Graph *graph);
 void askFileLocation(Graph *graph);
 void askSaveLocation(Graph *graph);
@@ -43,5 +45,6 @@ void createExampleGraph(Graph *graph);
 
 // read user inputs for eulerian circuit
 void readEulerianCircuit();
+void printHeuristicChoice();
 
 #endif
