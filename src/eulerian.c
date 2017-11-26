@@ -1,4 +1,5 @@
 #include <eulerian.h>
+#include <stdio.h>
 
 size_t copyGraph(Graph *source, Graph *destination){
   delete_graph(destination);
@@ -88,6 +89,10 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessor){
       }
     }
   }
+  /*
+  EulerianPath path = {0};
+  output_result(&path, stdout);
+  //*/
   return 0;
 }
 
@@ -180,6 +185,16 @@ size_t displayResults(size_t *self) {
   return outputResultsToStream(self, stdout);
   //*/
   return 20;
+}
+
+void output_result(EulerianPath *path, FILE *stream) {
+  fprintf(stream, "H(%d) = %zu : ", path->heuristicNumber, path->totalWeight);
+  EulerianList *pathList = path->start;
+  while(pathList->next != NULL) {
+    fprintf(stream, "%zu --(%zu)--> ", pathList->node, pathList->weight);
+    pathList = pathList->next;
+  }
+  fprintf(stream, "%zu\n", pathList->node);
 }
 
 void checkVisited(Graph *graph, size_t v, bool visited[]) {

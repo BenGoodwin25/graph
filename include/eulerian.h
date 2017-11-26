@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include <eulerianlist.h>
+#include <eulerianpath.h>
 #include <matrix.h>
 #include <graph.h>
 
@@ -110,6 +111,8 @@ size_t outputResultsToStream(size_t *self, FILE *stream);
  *  error code 20 : function not yet implemented
  */
 size_t displayResults(size_t *self);
+
+void output_result(EulerianPath *path, FILE *stream);
 
 /*
  * Function : Check that a graph is connected or not
