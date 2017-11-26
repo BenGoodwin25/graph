@@ -41,3 +41,12 @@ size_t delete_matrix(Matrix *self){
   free(self->value);
   return 20;
 }
+
+size_t copy_matrix(Matrix *src, Matrix *dst) {
+  for (size_t i = 0; i < src->maxNodes; i++) {
+    for (size_t j = 0; j < src->maxNodes; j++) {
+      dst->value[i][j] = src->value[i][j];
+    }
+  }
+  return 0;
+}

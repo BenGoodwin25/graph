@@ -33,10 +33,10 @@ int main() {
 }
 //*/
 
-/*
+//*
 int main() {
   Graph graph = {0};
-  createExampleGraph(&graph);
+  createExampleEulerian(&graph);
   Matrix *m0 = malloc(sizeof(Matrix));
   Matrix *m1 = malloc(sizeof(Matrix));
   create_matrix(m0, graph.nbMaxNodes, graph.isDirected);
@@ -45,7 +45,7 @@ int main() {
 }
 //*/
 
-//*
+/*
 int main() {
   Graph graph = {0};
   createExampleEulerian(&graph);
@@ -53,6 +53,6 @@ int main() {
   copyGraph(&graph, &copy);
   view_graph(&graph);
   view_graph(&copy);
-  //getEulerianCircuit(&graph, 0);
+  getEulerianCircuit(&graph, 0);
 }
 //*/

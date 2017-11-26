@@ -24,16 +24,41 @@ size_t copyGraph(Graph *source, Graph *destination){
 }
 
 void print_matrix(Matrix *self){
-  printf("%zu maxNodes\n", self->maxNodes);
+  printf("______________________________________________________\n");
   for(size_t i = 0; i < self->maxNodes; i++) {
     for(size_t j = 0; j < self->maxNodes; j++) {
-      printf("|%zd", self->value[i][j]);
+      printf(" | %4zd", self->value[i][j]);
     }
-    printf("|\n");
+    printf(" | \n");
   }
 }
 
-size_t Floyd_Warshall(Graph *g, Matrix *self, Matrix *predecessor){
+void convertToWeightMatrix(Graph *g, Matrix *weights) {
+  for (size_t i = 0; i < g->nbMaxNodes; i++) {
+    if(is_node_exists(g, i)){
+      Neighbour *tmp = g->adjList[i];
+      weights->value[i][i] = 0;
+      while (tmp->neighbour != -1) {
+        weights->value[i][tmp->neighbour] = tmp->weight;
+        tmp = tmp->nextNeighbour;
+      }
+    }
+  }
+}
+
+void convertToPredecessorMatrix(Graph *g, Matrix *predecessor) {
+  for (size_t i = 0; i < g->nbMaxNodes; i++) {
+    if(is_node_exists(g, i)){
+      Neighbour *tmp = g->adjList[i];
+      while (tmp->neighbour != -1) {
+        predecessor->value[tmp->neighbour][i] = i;
+        tmp = tmp->nextNeighbour;
+      }
+    }
+  }
+}
+
+size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessor){
   /*
   for each node z ∈ V {
     for each node x ∈ V {
@@ -46,24 +71,24 @@ size_t Floyd_Warshall(Graph *g, Matrix *self, Matrix *predecessor){
     }
   }
   */
-  print_matrix(self);
-  print_matrix(predecessor);
-  for(size_t i = 0; i < self->maxNodes; i++) {
-    for(size_t j = 0; j < self->maxNodes; j++) {
-      for (size_t k = 0; k < self->maxNodes; k++) {
-        if(self->value[j][i] != -1
-            && self->value[i][k] != -1
-            && self->value[j][i] + self->value[i][k] < self->value[j][k])
+  create_matrix(weights, g->nbMaxNodes, g->isDirected);
+  create_matrix(predecessor, g->nbMaxNodes, g->isDirected);
+  convertToWeightMatrix(g, weights);
+  convertToPredecessorMatrix(g, predecessor);
+  for(size_t z = 0; z < weights->maxNodes; z++) {
+    for(size_t x = 0; x < weights->maxNodes; x++) {
+      for (size_t y = 0; y < weights->maxNodes; y++) {
+        if(weights->value[x][z] != -1
+            && weights->value[z][y] != -1
+            && weights->value[x][z] + weights->value[z][y] < weights->value[x][y])
         {
-          self->value[j][k] = self->value[j][i] + self->value[i][k];
-          predecessor->value[j][k] = predecessor->value[i][k];
+          weights->value[x][y] = weights->value[x][z] + weights->value[z][y];
+          predecessor->value[x][y] = z;
         }
       }
     }
   }
-  print_matrix(self);
-  print_matrix(predecessor);
-  return 20;
+  return 0;
 }
 
 size_t minLengthPairwise(size_t *V, List *bestMatching, List *bestMatchingWeight){
@@ -83,7 +108,6 @@ size_t minLengthPairwise(size_t *V, List *bestMatching, List *bestMatchingWeight
    */
   return 20;
 }
-
 
 size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs){
   /*
@@ -148,11 +172,13 @@ size_t outputResultsToStream(size_t *self, FILE *stream){
 }
 
 size_t displayResults(size_t *self) {
-  /*if (Verify result have been calculated) {
+  /*
+  if (Verify result have been calculated) {
     LOG_ERROR("result have to be calculated !\n");
     return 1;
   }
-  return outputResultsToStream(self, stdout);*/
+  return outputResultsToStream(self, stdout);
+  //*/
   return 20;
 }
 
@@ -167,42 +193,6 @@ void checkVisited(Graph *graph, size_t v, bool visited[]) {
   }
 }
 
-size_t isConnected(Graph *self, bool *connectedResult) {
-  // Create a tab of boolean to check if all verticies are visited
-  bool visited[self->nbMaxNodes];
-  for (size_t i = 0; i < self->nbMaxNodes; i++) {
-    visited[i] = false;
-  }
-
-  // Find a not connected node
-  size_t node;
-  for (node = 0; node < self->nbMaxNodes; node++) {
-    if(self->adjList[node]->neighbour != -1) {
-      break;
-    }
-  }
-
-  // if there is no edges in the graph
-  if (node == self->nbMaxNodes) {
-    *connectedResult = true;
-    return 0;
-  }
-
-  // Go throught all edges to check that each nodes are visited
-  checkVisited(self, node, visited);
-
-  // Check if there is a not connected node in the graph
-  for (size_t i = 0; i < self->nbMaxNodes; i++) {
-    if (visited[i] == false && self->adjList[i]->neighbour != -1) {
-      *connectedResult = false;
-      return 0;
-    }
-  }
-
-  *connectedResult = true;
-  return 0;
-}
-
 size_t getNodeDegree(Neighbour *self) {
   size_t degree = 0;
   while (self->neighbour != -1) {
@@ -213,14 +203,6 @@ size_t getNodeDegree(Neighbour *self) {
 }
 
 size_t isEulerian(Graph *self, size_t *eulerianResult) {
-  // if the graph isn't connected, then the graph isn't eulerian
-  bool connectedResult = false;
-  isConnected(self, &connectedResult);
-  if (connectedResult == false) {
-    *eulerianResult = 2;
-    return 0;
-  }
-
   // Count for verticies with odd degrees
   size_t oddDegrees = 0;
   for (size_t i = 0; i < self->nbMaxNodes; i++) {
@@ -306,18 +288,18 @@ void createExampleEulerian(Graph *self) {
   add_node(self, 9);
   add_node(self, 10);
   add_edge(self, 1, 2, 0, 1, false);
-  add_edge(self, 1, 3, 1, 1, false);
-  add_edge(self, 1, 4, 2, 1, false);
-  add_edge(self, 1, 9, 3, 1, false);
-  add_edge(self, 2, 3, 4, 1, false);
+  add_edge(self, 1, 3, 1, 4, false);
+  add_edge(self, 1, 4, 2, 2, false);
+  add_edge(self, 1, 9, 3, 8, false);
+  add_edge(self, 2, 3, 4, 4, false);
   add_edge(self, 3, 6, 5, 1, false);
-  add_edge(self, 3, 10, 6, 1, false);
-  add_edge(self, 4, 5, 7, 1, false);
-  add_edge(self, 4, 6, 8, 1, false);
+  add_edge(self, 3, 10, 6, 6, false);
+  add_edge(self, 4, 5, 7, 2, false);
+  add_edge(self, 4, 6, 8, 2, false);
   add_edge(self, 4, 7, 9, 1, false);
-  add_edge(self, 5, 6, 10, 1, false);
-  add_edge(self, 6, 8, 11, 1, false);
+  add_edge(self, 5, 6, 10, 7, false);
+  add_edge(self, 6, 8, 11, 9, false);
   add_edge(self, 7, 8, 12, 1, false);
-  add_edge(self, 9, 10, 13, 1, false);
+  add_edge(self, 9, 10, 13, 3, false);
   printf("# Example eulerian graph created!\n");
 }

@@ -38,7 +38,7 @@ size_t copyGraph(Graph *source, Graph *destination);
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-size_t Floyd_Warshall(Graph *G, Matrix *self, Matrix *predecessor);
+size_t Floyd_Warshall(Graph *G, Matrix *weights, Matrix *predecessor);
 
 /*
  * Function : Minimal-length Pairwise Matching by Enumeration

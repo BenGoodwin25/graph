@@ -43,4 +43,6 @@ size_t create_matrix(Matrix *self, size_t maxNodes, bool isDirected);
  */
 size_t delete_matrix(Matrix *self);
 
+size_t copy_matrix(Matrix *src, Matrix *dst);
+
 #endif //GRAPH_MATRIX_H
