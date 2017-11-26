@@ -25,7 +25,7 @@ int main() {
 }
 //*/
 
-//*
+/*
 int main() {
   Graph graph = {0};
   startMenu(&graph);
@@ -45,10 +45,14 @@ int main() {
 }
 //*/
 
-/*
+//*
 int main() {
   Graph graph = {0};
   createExampleEulerian(&graph);
-  getEulerianCircuit(&graph, 0);
+  Graph copy = {0};
+  copyGraph(&graph, &copy);
+  view_graph(&graph);
+  view_graph(&copy);
+  //getEulerianCircuit(&graph, 0);
 }
 //*/

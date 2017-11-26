@@ -82,7 +82,7 @@ size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs);
  *  error code 1 : create couldn't be executed
  *  error code 20 : function not yet implemented
  */
-size_t getEulerianCircuit(Graph *self, int heuristic);
+size_t getEulerianCircuit(Graph *self, size_t heuristic);
 
 /*
  * Function : output result to stream (stdout, FILE)

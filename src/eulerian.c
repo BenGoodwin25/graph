@@ -1,11 +1,26 @@
 #include <eulerian.h>
 
 size_t copyGraph(Graph *source, Graph *destination){
-  size_t error;
-  error = save_graph(source, "tmpGraph");
-  error += load_graph(destination,"tmpGraph");
-  unlink("tmpGraph");
-  return error;
+  delete_graph(destination);
+  create_graph(destination, source->nbMaxNodes, source->isDirected);
+
+  for (size_t i = 0; i < source->nbMaxNodes; i++) {
+    if (is_node_exists(source, i)) {
+      add_node(destination, i+1);
+    }
+  }
+
+  for (size_t i = 0; i < source->nbMaxNodes; i++) {
+    if (is_node_exists(source, i)) {
+      Neighbour *tmp = source->adjList[i];
+      while (tmp->neighbour != -1) {
+        add_edge(destination, i+1, tmp->neighbour+1, tmp->edgeName, tmp->weight, true);
+        tmp = tmp->nextNeighbour;
+      }
+    }
+  }
+
+  return 0;
 }
 
 void print_matrix(Matrix *self){
@@ -85,7 +100,14 @@ size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs){
   return 20;
 }
 
-size_t getEulerianCircuit(Graph *self, int heuristic){
+void computeChineseCircuit(Graph *self, size_t heuristic) {
+  // TODO: compute chinese circuit
+  if (heuristic == 1) {
+    // Floyd_Warshall
+  }
+}
+
+size_t getEulerianCircuit(Graph *self, size_t heuristic){
   /*FILE name;
   size_t error=0;
   error+=outputResultsToStream(self, &name);
@@ -93,31 +115,27 @@ size_t getEulerianCircuit(Graph *self, int heuristic){
   return error;*/
   size_t result = 10;
   isEulerian(self, &result);
+  bool isHalfEulerian = false;
   switch (result) {
     case GRAPH_EULERIAN:
       printf("# The graph is eulerian.\n");
       break;
     case GRAPH_HALF_EULERIAN:
       printf("# The graph is half eulerian.\n");
+      isHalfEulerian = true;
       break;
     case GRAPH_NON_EULERIAN:
       printf("# The graph isn't eulerian.\n");
+      computeChineseCircuit(self, heuristic);
       break;
     default:
       break;
   }
-  if(heuristic == 0 ) {
-    // TODO: Do all heuristics
+  if (isHalfEulerian) {
+    // TODO: do half eulerian by joining one odd degree node to the other
+  } else {
+    // start by any node
   }
-  /*
-  if(heuristic == 1) {
-    Matrix *m0 = malloc(sizeof(Matrix));
-    Matrix *m1 = malloc(sizeof(Matrix));
-    create_matrix(m0, self->nbMaxNodes, self->isDirected);
-    create_matrix(m1, self->nbMaxNodes, self->isDirected);
-    Floyd_Warshall(self, m0, m1);
-  }
-  */
   return 20;
 };
 
