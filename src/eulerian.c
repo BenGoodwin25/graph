@@ -136,6 +136,76 @@ void computeChineseCircuit(Graph *self, size_t heuristic) {
   }
 }
 
+EulerianList* union_eulerelement(EulerianList *result, size_t element) {
+  result->node = element;
+  result->weight = 0;
+  result->next = malloc(sizeof(EulerianList));
+  result = result->next;
+  result->node = -1;
+  result->weight = 0;
+  return result;
+}
+
+size_t size(EulerianList *list) {
+  size_t count = 0;
+  while (list->node != -1) {
+    count++;
+    list = list->next;
+  }
+  return count;
+}
+
+void union_eulerlist(EulerianList *dst, EulerianList *src) {
+  while (dst->node != src->node) {
+    dst = dst->next;
+  }
+  EulerianList *tmp = dst;
+  tmp = dst->next;
+  dst->next = src;
+  while (src->next->node != -1) {
+    src = src->next;
+  }
+  free(src->next);
+  src->next = tmp;
+}
+
+EulerianList* parse(Graph *graph, size_t x) {
+  EulerianList *result = malloc(sizeof(EulerianList));
+  result->node = x;
+  result->weight = 0;
+  EulerianList *iterator = union_eulerelement(result, x);
+  size_t current = x;
+  while (graph->adjList[current]->neighbour != -1) {
+    Neighbour *n = graph->adjList[current];
+    union_eulerelement(iterator, n->neighbour);
+    remove_edge(graph, n->edgeName);
+    current = n->neighbour;
+  }
+  EulerianList *tmp = result;
+  while (tmp->next->node != -1) {
+    tmp = tmp->next;
+    union_eulerlist(result, parse(graph, tmp->node));
+  }
+  return result;
+}
+
+void buildEulerianCircuit(Graph *graph) {
+  Graph copy = {0};
+  EulerianPath result = {0};
+  EulerianList *list = malloc(sizeof(EulerianList));
+  list->node = 0;
+  list->weight = 0;
+  union_eulerelement(list, 0);
+  copyGraph(graph, &copy);
+  for (size_t i = 0; i < copy.nbMaxNodes; i++) {
+    if (copy.adjList[i]->neighbour != -1) {
+      union_eulerlist(list, parse(&copy, i));
+    }
+  }
+  result.start = list;
+  output_result(&result, stdout);
+}
+
 size_t getEulerianCircuit(Graph *self, size_t heuristic){
   /*FILE name;
   size_t error=0;
@@ -163,10 +233,10 @@ size_t getEulerianCircuit(Graph *self, size_t heuristic){
   if (isHalfEulerian) {
     // TODO: do half eulerian by joining one odd degree node to the other
   } else {
-    // start by any node
+    buildEulerianCircuit(self);
   }
   return 20;
-};
+}
 
 size_t outputResultsToStream(size_t *self, FILE *stream){
   /*

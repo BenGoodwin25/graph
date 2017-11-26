@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 typedef struct _eulerlist{
-  size_t node;
+  ssize_t node;
   size_t weight;
   struct _eulerlist *next;
 } EulerianList;
