@@ -42,6 +42,13 @@ size_t delete_matrix(Matrix *self){
   return 20;
 }
 
+size_t graph_to_matrix(Matrix *self, Graph *graph){
+
+
+
+  return 20;
+}
+
 size_t copy_matrix(Matrix *src, Matrix *dst) {
   for (size_t i = 0; i < src->maxNodes; i++) {
     for (size_t j = 0; j < src->maxNodes; j++) {

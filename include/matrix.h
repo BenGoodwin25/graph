@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <graph.h>
 #include <log.h>
 
 typedef struct _matrix{
@@ -43,6 +44,47 @@ size_t create_matrix(Matrix *self, size_t maxNodes, bool isDirected);
  */
 size_t delete_matrix(Matrix *self);
 
+
+/*
+ * Function : Integration of a graph into a matrix
+ *
+ * Param :
+ *  self : the matrix
+ *  predecessor : the graph to import
+ *
+ * Return :
+ *  error code 0 : predecessor correctly executed
+ *  error code 1 : predecessor couldn't be executed
+ *  error code 20 : function not yet implemented
+ */
+size_t graph_to_matrix(Matrix *self, Graph *graph);
+
+/*
+ * Function : creation of a predecessor matrix
+ *
+ * Param :
+ *  self : the matrix to create
+ *  predecessor : the predecessor matrix of self
+ *
+ * Return :
+ *  error code 0 : predecessor correctly executed
+ *  error code 1 : predecessor couldn't be executed
+ *  error code 20 : function not yet implemented
+ */
+size_t create_predecessor(Matrix *self, Matrix *predecessor);
+
+/*
+ * Function : copy of a matrix
+ *
+ * Param :
+ *  self : the destination matrix
+ *  predecessor : the source matrix
+ *
+ * Return :
+ *  error code 0 : predecessor correctly executed
+ *  error code 1 : predecessor couldn't be executed
+ *  error code 20 : function not yet implemented
+ */
 size_t copy_matrix(Matrix *src, Matrix *dst);
 
 #endif //GRAPH_MATRIX_H

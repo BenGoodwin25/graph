@@ -238,7 +238,7 @@ size_t getEulerianCircuit(Graph *self, size_t heuristic){
 
 size_t outputResultsToStream(size_t *self, FILE *stream){
   /*
-  H(1) = 40 : 1 --(20)--> 2 --(10)--> 3 --(10)--> 4
+  H(1) = 40 : 1 --(the predecessor matrix of self20)--> 2 --(10)--> 3 --(10)--> 4
   H(2) = 60 : 1 --(30)--> 3 --(10)--> 2 --(20)--> 4
   */
   return 20;
@@ -295,11 +295,11 @@ size_t isEulerian(Graph *self, size_t *eulerianResult) {
   }
 
   if (oddDegrees > 2) {
-    *eulerianResult = 2;
+    *eulerianResult = GRAPH_NON_EULERIAN;
     return 0;
   }
 
-  *eulerianResult = ( oddDegrees == 0 ) ? 0 : 1;
+  *eulerianResult = ( oddDegrees == 0 ) ? GRAPH_EULERIAN : GRAPH_HALF_EULERIAN;
   return 0;
 }
 
