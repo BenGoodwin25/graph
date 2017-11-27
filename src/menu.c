@@ -40,7 +40,7 @@ int readInputMainMenu(Graph *graph){
   if(sscanf(inputString, "%d", &choice) == 1){
     switch(choice){
       case CREATE_EXAMPLE_GRAPH:
-        createExampleGraph(graph);
+        readCreateExampleGraph(graph);
         break;
       case CREATE_GRAPH:
         readCreateGraph(graph);
@@ -106,6 +106,46 @@ int readUserInput(char *dest, int length){
   } else {
     flushReadBuffer();
     return 1;
+  }
+}
+
+void printExampleGraphList() {
+  printf("# 0 : Default graph.\n");
+  printf("# 1 : Non eulerian graph.\n");
+  printf("# 2 : Half eulerian graph.\n");
+  printf("# 3 : Eulerian graph.\n");
+}
+
+void readCreateExampleGraph(Graph *graph) {
+  int choice;
+  char choiceInput[MAX_DIGIT_LENGTH];
+
+  printf("# Enter a choice :\n");
+  printExampleGraphList();
+  while(readUserInput(choiceInput, MAX_DIGIT_LENGTH+1) != 0){}
+  if(sscanf(choiceInput, "%d", &choice) == 1) {
+    if (choice > 3 || choice < 0) {
+      LOG_ERROR("Can't determine which default graph do you want to create.\n");
+      return;
+    }
+    switch (choice) {
+      case 0:
+        createExampleGraph(graph);
+        break;
+      case 1:
+        createExampleNonEulerian(graph);
+        break;
+      case 2:
+        createExampleHalfEulerian(graph);
+        break;
+      case 3:
+        createExampleEulerian(graph);
+        break;
+      default:
+        break;
+    }
+  } else {
+    LOG_ERROR_INT_CONVERT();
   }
 }
 
@@ -311,7 +351,6 @@ void readEulerianCircuit(Graph *graph) {
     return;
   }
   getEulerianCircuit(graph, heuristic);
-  printf("# Eulerian Circuit!");
 }
 
 void printHeuristicChoice() {

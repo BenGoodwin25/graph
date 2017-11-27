@@ -4,8 +4,13 @@
 #include <stdio.h>
 
 #include <eulerianlist.h>
+#include <eulerianpath.h>
 #include <matrix.h>
 #include <graph.h>
+
+#define GRAPH_EULERIAN 0
+#define GRAPH_HALF_EULERIAN 1
+#define GRAPH_NON_EULERIAN 2
 
 /*
  * Function : duplicate a graph to do efficient work on it
@@ -34,7 +39,7 @@ size_t copyGraph(Graph *source, Graph *destination);
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-size_t Floyd_Warshall(Graph *G, Matrix *self, Matrix *predecessor);
+size_t Floyd_Warshall(Graph *G, Matrix *weights, Matrix *predecessor);
 
 /*
  * Function : Minimal-length Pairwise Matching by Enumeration
@@ -78,7 +83,7 @@ size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs);
  *  error code 1 : create couldn't be executed
  *  error code 20 : function not yet implemented
  */
-size_t getEulerianCircuit(Graph *self, int heuristic);
+size_t getEulerianCircuit(Graph *self, size_t heuristic);
 
 /*
  * Function : output result to stream (stdout, FILE)
@@ -106,6 +111,8 @@ size_t outputResultsToStream(size_t *self, FILE *stream);
  *  error code 20 : function not yet implemented
  */
 size_t displayResults(size_t *self);
+
+void output_result(EulerianPath *path, FILE *stream);
 
 /*
  * Function : Check that a graph is connected or not

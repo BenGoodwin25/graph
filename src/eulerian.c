@@ -1,24 +1,65 @@
 #include <eulerian.h>
+#include <stdio.h>
 
 size_t copyGraph(Graph *source, Graph *destination){
-  size_t error;
-  error = save_graph(source, "tmpGraph");
-  error += load_graph(destination,"tmpGraph");
-  unlink("tmpGraph");
-  return error;
+  delete_graph(destination);
+  create_graph(destination, source->nbMaxNodes, source->isDirected);
+
+  for (size_t i = 0; i < source->nbMaxNodes; i++) {
+    if (is_node_exists(source, i)) {
+      add_node(destination, i+1);
+    }
+  }
+
+  for (size_t i = 0; i < source->nbMaxNodes; i++) {
+    if (is_node_exists(source, i)) {
+      Neighbour *tmp = source->adjList[i];
+      while (tmp->neighbour != -1) {
+        add_edge(destination, i+1, tmp->neighbour+1, tmp->edgeName, tmp->weight, true);
+        tmp = tmp->nextNeighbour;
+      }
+    }
+  }
+
+  return 0;
 }
 
 void print_matrix(Matrix *self){
-  printf("%zu maxNodes\n", self->maxNodes);
+  printf("______________________________________________________\n");
   for(size_t i = 0; i < self->maxNodes; i++) {
     for(size_t j = 0; j < self->maxNodes; j++) {
-      printf("|%zd", self->value[i][j]);
+      printf(" | %4zd", self->value[i][j]);
     }
-    printf("|\n");
+    printf(" | \n");
   }
 }
 
-size_t Floyd_Warshall(Graph *g, Matrix *self, Matrix *predecessor){
+void convertToWeightMatrix(Graph *g, Matrix *weights) {
+  for (size_t i = 0; i < g->nbMaxNodes; i++) {
+    if(is_node_exists(g, i)){
+      Neighbour *tmp = g->adjList[i];
+      weights->value[i][i] = 0;
+      while (tmp->neighbour != -1) {
+        weights->value[i][tmp->neighbour] = tmp->weight;
+        tmp = tmp->nextNeighbour;
+      }
+    }
+  }
+}
+
+void convertToPredecessorMatrix(Graph *g, Matrix *predecessor) {
+  for (size_t i = 0; i < g->nbMaxNodes; i++) {
+    if(is_node_exists(g, i)){
+      Neighbour *tmp = g->adjList[i];
+      while (tmp->neighbour != -1) {
+        predecessor->value[tmp->neighbour][i] = i;
+        tmp = tmp->nextNeighbour;
+      }
+    }
+  }
+}
+
+size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessor){
   /*
   for each node z ∈ V {
     for each node x ∈ V {
@@ -31,24 +72,28 @@ size_t Floyd_Warshall(Graph *g, Matrix *self, Matrix *predecessor){
     }
   }
   */
-  print_matrix(self);
-  print_matrix(predecessor);
-  for(size_t i = 0; i < self->maxNodes; i++) {
-    for(size_t j = 0; j < self->maxNodes; j++) {
-      for (size_t k = 0; k < self->maxNodes; k++) {
-        if(self->value[j][i] != -1
-            && self->value[i][k] != -1
-            && self->value[j][i] + self->value[i][k] < self->value[j][k])
+  create_matrix(weights, g->nbMaxNodes, g->isDirected);
+  create_matrix(predecessor, g->nbMaxNodes, g->isDirected);
+  convertToWeightMatrix(g, weights);
+  convertToPredecessorMatrix(g, predecessor);
+  for(size_t z = 0; z < weights->maxNodes; z++) {
+    for(size_t x = 0; x < weights->maxNodes; x++) {
+      for (size_t y = 0; y < weights->maxNodes; y++) {
+        if(weights->value[x][z] != -1
+            && weights->value[z][y] != -1
+            && weights->value[x][z] + weights->value[z][y] < weights->value[x][y])
         {
-          self->value[j][k] = self->value[j][i] + self->value[i][k];
-          predecessor->value[j][k] = predecessor->value[i][k];
+          weights->value[x][y] = weights->value[x][z] + weights->value[z][y];
+          predecessor->value[x][y] = z;
         }
       }
     }
   }
-  print_matrix(self);
-  print_matrix(predecessor);
-  return 20;
+  /*
+  EulerianPath path = {0};
+  output_result(&path, stdout);
+  //*/
+  return 0;
 }
 
 size_t minLengthPairwise(size_t *V, List *bestMatching, List *bestMatchingWeight){
@@ -69,7 +114,6 @@ size_t minLengthPairwise(size_t *V, List *bestMatching, List *bestMatchingWeight
   return 20;
 }
 
-
 size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs){
   /*
   if (V = ∅){
@@ -85,40 +129,142 @@ size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs){
   return 20;
 }
 
-size_t getEulerianCircuit(Graph *self, int heuristic){
+void computeChineseCircuit(Graph *self, size_t heuristic) {
+  // TODO: compute chinese circuit
+  if (heuristic == 1) {
+    // Floyd_Warshall
+  }
+}
+
+EulerianList* union_eulerelement(EulerianList *result, size_t element) {
+  result->node = element;
+  result->weight = 0;
+  result->next = malloc(sizeof(EulerianList));
+  result = result->next;
+  result->node = -1;
+  result->weight = 0;
+  return result;
+}
+
+size_t size(EulerianList *list) {
+  size_t count = 0;
+  while (list->node != -1) {
+    count++;
+    list = list->next;
+  }
+  return count;
+}
+
+void union_eulerlist(EulerianList *dst, EulerianList *src) {
+  while (dst->node != src->node) {
+    dst = dst->next;
+  }
+  EulerianList *tmp = dst;
+  tmp = dst->next;
+  dst->next = src;
+  while (src->next->node != -1) {
+    src = src->next;
+  }
+  free(src->next);
+  src->next = tmp;
+}
+
+EulerianList* parse(Graph *graph, size_t x) {
+  EulerianList *result = malloc(sizeof(EulerianList));
+  result->node = x;
+  result->weight = 0;
+  EulerianList *iterator = union_eulerelement(result, x);
+  size_t current = x;
+  while (graph->adjList[current]->neighbour != -1) {
+    Neighbour *n = graph->adjList[current];
+    union_eulerelement(iterator, n->neighbour);
+    remove_edge(graph, n->edgeName);
+    current = n->neighbour;
+  }
+  EulerianList *tmp = result;
+  while (tmp->next->node != -1) {
+    tmp = tmp->next;
+    union_eulerlist(result, parse(graph, tmp->node));
+  }
+  return result;
+}
+
+void buildEulerianCircuit(Graph *graph) {
+  Graph copy = {0};
+  EulerianPath result = {0};
+  EulerianList *list = malloc(sizeof(EulerianList));
+  list->node = 0;
+  list->weight = 0;
+  union_eulerelement(list, 0);
+  copyGraph(graph, &copy);
+  for (size_t i = 0; i < copy.nbMaxNodes; i++) {
+    if (copy.adjList[i]->neighbour != -1) {
+      union_eulerlist(list, parse(&copy, i));
+    }
+  }
+  result.start = list;
+  output_result(&result, stdout);
+}
+
+size_t getEulerianCircuit(Graph *self, size_t heuristic){
   /*FILE name;
   size_t error=0;
   error+=outputResultsToStream(self, &name);
   error+=displayResults(self);
   return error;*/
-  if(heuristic == 0 ) {
-    // TODO: Do all heuristics
+  size_t result = 10;
+  isEulerian(self, &result);
+  bool isHalfEulerian = false;
+  switch (result) {
+    case GRAPH_EULERIAN:
+      printf("# The graph is eulerian.\n");
+      break;
+    case GRAPH_HALF_EULERIAN:
+      printf("# The graph is half eulerian.\n");
+      isHalfEulerian = true;
+      break;
+    case GRAPH_NON_EULERIAN:
+      printf("# The graph isn't eulerian.\n");
+      computeChineseCircuit(self, heuristic);
+      break;
+    default:
+      break;
   }
-  if(heuristic == 1) {
-    Matrix *m0 = malloc(sizeof(Matrix));
-    Matrix *m1 = malloc(sizeof(Matrix));
-    create_matrix(m0, self->nbMaxNodes, self->isDirected);
-    create_matrix(m1, self->nbMaxNodes, self->isDirected);
-    Floyd_Warshall(self, m0, m1);
+  if (isHalfEulerian) {
+    // TODO: do half eulerian by joining one odd degree node to the other
+  } else {
+    buildEulerianCircuit(self);
   }
   return 20;
-};
+}
 
 size_t outputResultsToStream(size_t *self, FILE *stream){
   /*
-  H(1) = 40 : 1 --(20)--> 2 --(10)--> 3 --(10)--> 4
+  H(1) = 40 : 1 --(the predecessor matrix of self20)--> 2 --(10)--> 3 --(10)--> 4
   H(2) = 60 : 1 --(30)--> 3 --(10)--> 2 --(20)--> 4
   */
   return 20;
 }
 
 size_t displayResults(size_t *self) {
-  /*if (Verify result have been calculated) {
+  /*
+  if (Verify result have been calculated) {
     LOG_ERROR("result have to be calculated !\n");
     return 1;
   }
-  return outputResultsToStream(self, stdout);*/
+  return outputResultsToStream(self, stdout);
+  //*/
   return 20;
+}
+
+void output_result(EulerianPath *path, FILE *stream) {
+  fprintf(stream, "H(%d) = %zu : ", path->heuristicNumber, path->totalWeight);
+  EulerianList *pathList = path->start;
+  while(pathList->next != NULL) {
+    fprintf(stream, "%zu --(%zu)--> ", pathList->node, pathList->weight);
+    pathList = pathList->next;
+  }
+  fprintf(stream, "%zu\n", pathList->node);
 }
 
 void checkVisited(Graph *graph, size_t v, bool visited[]) {
@@ -132,42 +278,6 @@ void checkVisited(Graph *graph, size_t v, bool visited[]) {
   }
 }
 
-size_t isConnected(Graph *self, bool *connectedResult) {
-  // Create a tab of boolean to check if all verticies are visited
-  bool visited[self->nbMaxNodes];
-  for (size_t i = 0; i < self->nbMaxNodes; i++) {
-    visited[i] = false;
-  }
-
-  // Find a not connected node
-  size_t node;
-  for (node = 0; node < self->nbMaxNodes; node++) {
-    if(self->adjList[node]->neighbour != -1) {
-      break;
-    }
-  }
-
-  // if there is no edges in the graph
-  if (node == self->nbMaxNodes) {
-    *connectedResult = true;
-    return 0;
-  }
-
-  // Go throught all edges to check that each nodes are visited
-  checkVisited(self, node, visited);
-
-  // Check if there is a not connected node in the graph
-  for (size_t i = 0; i < self->nbMaxNodes; i++) {
-    if (visited[i] == false && self->adjList[i]->neighbour != -1) {
-      *connectedResult = false;
-      return 0;
-    }
-  }
-
-  *connectedResult = true;
-  return 0;
-}
-
 size_t getNodeDegree(Neighbour *self) {
   size_t degree = 0;
   while (self->neighbour != -1) {
@@ -178,14 +288,6 @@ size_t getNodeDegree(Neighbour *self) {
 }
 
 size_t isEulerian(Graph *self, size_t *eulerianResult) {
-  // if the graph isn't connected, then the graph isn't eulerian
-  bool connectedResult = false;
-  isConnected(self, &connectedResult);
-  if (connectedResult == false) {
-    *eulerianResult = 2;
-    return 0;
-  }
-
   // Count for verticies with odd degrees
   size_t oddDegrees = 0;
   for (size_t i = 0; i < self->nbMaxNodes; i++) {
@@ -195,11 +297,11 @@ size_t isEulerian(Graph *self, size_t *eulerianResult) {
   }
 
   if (oddDegrees > 2) {
-    *eulerianResult = 2;
+    *eulerianResult = GRAPH_NON_EULERIAN;
     return 0;
   }
 
-  *eulerianResult = ( oddDegrees == 0 ) ? 0 : 1;
+  *eulerianResult = ( oddDegrees == 0 ) ? GRAPH_EULERIAN : GRAPH_HALF_EULERIAN;
   return 0;
 }
 
@@ -234,6 +336,7 @@ void createExampleNonEulerian(Graph *self) {
   add_edge(self, 10, 11, 14, 50, false);
   add_edge(self, 10, 12, 15, 2, false);
   add_edge(self, 11, 12, 16, 3, false);
+  printf("# Example non eulerian graph created!\n");
 }
 
 void createExampleHalfEulerian(Graph *self) {
@@ -254,6 +357,7 @@ void createExampleHalfEulerian(Graph *self) {
   add_edge(self, 4, 5, 7, 1, false);
   add_edge(self, 4, 6, 8, 1, false);
   add_edge(self, 5, 6, 9, 1, false);
+  printf("# Example half eulerian graph created!\n");
 }
 
 void createExampleEulerian(Graph *self) {
@@ -269,17 +373,18 @@ void createExampleEulerian(Graph *self) {
   add_node(self, 9);
   add_node(self, 10);
   add_edge(self, 1, 2, 0, 1, false);
-  add_edge(self, 1, 3, 1, 1, false);
-  add_edge(self, 1, 4, 2, 1, false);
-  add_edge(self, 1, 9, 3, 1, false);
-  add_edge(self, 2, 3, 4, 1, false);
+  add_edge(self, 1, 3, 1, 4, false);
+  add_edge(self, 1, 4, 2, 2, false);
+  add_edge(self, 1, 9, 3, 8, false);
+  add_edge(self, 2, 3, 4, 4, false);
   add_edge(self, 3, 6, 5, 1, false);
-  add_edge(self, 3, 10, 6, 1, false);
-  add_edge(self, 4, 5, 7, 1, false);
-  add_edge(self, 4, 6, 8, 1, false);
+  add_edge(self, 3, 10, 6, 6, false);
+  add_edge(self, 4, 5, 7, 2, false);
+  add_edge(self, 4, 6, 8, 2, false);
   add_edge(self, 4, 7, 9, 1, false);
-  add_edge(self, 5, 6, 10, 1, false);
-  add_edge(self, 6, 8, 11, 1, false);
+  add_edge(self, 5, 6, 10, 7, false);
+  add_edge(self, 6, 8, 11, 9, false);
   add_edge(self, 7, 8, 12, 1, false);
-  add_edge(self, 9, 10, 13, 1, false);
+  add_edge(self, 9, 10, 13, 3, false);
+  printf("# Example eulerian graph created!\n");
 }
