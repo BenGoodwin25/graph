@@ -1,6 +1,15 @@
 #include <eulerian.h>
 #include <stdio.h>
 
+size_t getNodeDegree(Neighbour *self) {
+  size_t degree = 0;
+  while (self->neighbour != -1) {
+    degree++;
+    self = self->nextNeighbour;
+  }
+  return degree;
+}
+
 size_t copyGraph(Graph *source, Graph *destination){
   delete_graph(destination);
   create_graph(destination, source->nbMaxNodes, source->isDirected);
@@ -215,7 +224,19 @@ void buildEulerianPath(Graph *graph) {
   EulerianList *list = NULL;
   copyGraph(graph, &copy);
   // find the first odd degree node
-  //
+  size_t oddNode = 0;
+  while (getNodeDegree(graph->adjList[oddNode]) % 2 == 0) {
+    oddNode++;
+  }
+  union_eulerlist(&list, parse(&copy, oddNode));
+  for (size_t i = 0; i < copy.nbMaxNodes; i++) {
+    if (copy.adjList[i]->neighbour != -1) {
+      union_eulerlist(&list, parse(&copy, i));
+    }
+  }
+  result.start = list;
+  rebuildPathWeight(graph, &result);
+  output_result(&result, stdout);
 }
 
 void buildEulerianCircuit(Graph *graph) {
@@ -303,15 +324,6 @@ void checkVisited(Graph *graph, size_t v, bool visited[]) {
     }
     tmp = tmp->nextNeighbour;
   }
-}
-
-size_t getNodeDegree(Neighbour *self) {
-  size_t degree = 0;
-  while (self->neighbour != -1) {
-    degree++;
-    self = self->nextNeighbour;
-  }
-  return degree;
 }
 
 size_t isEulerian(Graph *self, size_t *eulerianResult) {
