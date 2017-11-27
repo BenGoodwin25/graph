@@ -77,7 +77,7 @@ int readInputMainMenu(Graph *graph){
         return 1;
         break;
       case COMPUTE_EULERIAN_CIRCUIT:
-        readEulerianCircuit();
+        readEulerianCircuit(graph);
         break;
       default:
         fputs("# Please make a choice between 0 and 11\n", stdout);
