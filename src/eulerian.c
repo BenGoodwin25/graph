@@ -262,7 +262,7 @@ void output_result(EulerianPath *path, FILE *stream) {
     fprintf(stream, "%zu --(%zu)--> ", pathList->node+1, pathList->weight);
     pathList = pathList->next;
   }
-  fprintf(stream, "%zu\n", pathList->node);
+  fprintf(stream, "%zu\n", pathList->node+1);
 }
 
 void checkVisited(Graph *graph, size_t v, bool visited[]) {
