@@ -33,7 +33,7 @@ int main() {
 }
 //*/
 
-//*
+/*
 int main() {
   Graph graph = {0};
   createExampleGraph(&graph);
@@ -42,5 +42,15 @@ int main() {
   create_matrix(m0, graph.nbMaxNodes, graph.isDirected);
   create_matrix(m1, graph.nbMaxNodes, graph.isDirected);
   Floyd_Warshall(&graph, m0, m1);
+}
+//*/
+
+//*
+int main() {
+  size_t result = 10;
+  Graph graph = {0};
+  createExampleEulerian(&graph);
+  isEulerian(&graph, &result);
+  printf("Eulerian result : %zu.\n", result);
 }
 //*/

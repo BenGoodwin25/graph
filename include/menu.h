@@ -2,6 +2,7 @@
 #define LIB_MENU_H
 
 #include <graph.h>
+#include <matrix.h>
 
 #define MAX_PATH_LENGTH 256
 #define MAX_DIGIT_LENGTH 10

@@ -55,8 +55,7 @@ size_t minLengthPairwise(size_t *V,List *bestMatching, List *bestMatchingWeight)
  * Function :
  *
  * Param :
- *  V :  the set of nodes to match by pairs (must have an even number of elements), ordered by node
-numbers
+ *  V :  the set of nodes to match by pairs (must have an even number of elements), ordered by node numbers
  *  currentListOfPairs : the current list of pairs under construction
  *  listsOfPairs :  The list (initially empty) of all the possible list of pairs
  *
@@ -79,7 +78,7 @@ size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs);
  *  error code 1 : create couldn't be executed
  *  error code 20 : function not yet implemented
  */
-size_t getEulerianCircuit(Graph *self, size_t h);
+size_t getEulerianCircuit(Graph *self, int heuristic);
 
 /*
  * Function : output result to stream (stdout, FILE)
@@ -107,5 +106,71 @@ size_t outputResultsToStream(size_t *self, FILE *stream);
  *  error code 20 : function not yet implemented
  */
 size_t displayResults(size_t *self);
+
+/*
+ * Function : Check that a graph is connected or not
+ *
+ * Param :
+ *  self :  The graph to check if it is eulerian
+ *
+ * Return :
+ *  error code 0 : function correctly executed
+ *  error code 1 : function couldn't be done
+ *  error code 20 : function not yet implemented
+ */
+size_t isConnected(Graph *self, bool *connectedResult);
+
+/*
+ * Function : check if a graph is eulerian or not
+ *
+ * Param :
+ *  self :  The graph to check if it is eulerian
+ *  eulerianResult :  The result if its eulerian (0 : eulerian, 1 : half-eulerian, 2 : non eulerian)
+ *
+ * Return :
+ *  error code 0 : function correctly executed
+ *  error code 1 : function couldn't be done
+ *  error code 20 : function not yet implemented
+ */
+size_t isEulerian(Graph *self, size_t *eulerianResult);
+
+/*
+ * Function : create a non eulerian graph
+ *
+ * Param :
+ *  self :  The graph to create
+ *
+ * Return :
+ *  error code 0 : function correctly executed
+ *  error code 1 : function couldn't be done
+ *  error code 20 : function not yet implemented
+ */
+void createExampleNonEulerian(Graph *self);
+
+/*
+ * Function : create a half eulerian graph
+ *
+ * Param :
+ *  self :  The graph to create
+ *
+ * Return :
+ *  error code 0 : function correctly executed
+ *  error code 1 : function couldn't be done
+ *  error code 20 : function not yet implemented
+ */
+void createExampleHalfEulerian(Graph *self);
+
+/*
+ * Function : check if a graph is eulerian or not
+ *
+ * Param :
+ *  self :  The graph to create
+ *
+ * Return :
+ *  error code 0 : function correctly executed
+ *  error code 1 : function couldn't be done
+ *  error code 20 : function not yet implemented
+ */
+void createExampleEulerian(Graph *self);
 
 #endif //GRAPH_GRAPH_H
