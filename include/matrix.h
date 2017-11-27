@@ -44,21 +44,6 @@ size_t create_matrix(Matrix *self, size_t maxNodes, bool isDirected);
  */
 size_t delete_matrix(Matrix *self);
 
-
-/*
- * Function : Integration of a graph into a matrix
- *
- * Param :
- *  self : the matrix
- *  predecessor : the graph to import
- *
- * Return :
- *  error code 0 : predecessor correctly executed
- *  error code 1 : predecessor couldn't be executed
- *  error code 20 : function not yet implemented
- */
-size_t graph_to_matrix(Matrix *self, Graph *graph);
-
 /*
  * Function : creation of a predecessor matrix
  *

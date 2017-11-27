@@ -39,14 +39,7 @@ size_t delete_matrix(Matrix *self){
   }
   free(self->value[0]);
   free(self->value);
-  return 20;
-}
-
-size_t graph_to_matrix(Matrix *self, Graph *graph){
-
-
-
-  return 20;
+  return 0;
 }
 
 size_t copy_matrix(Matrix *src, Matrix *dst) {
