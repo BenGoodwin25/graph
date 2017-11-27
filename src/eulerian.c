@@ -136,14 +136,16 @@ void computeChineseCircuit(Graph *self, size_t heuristic) {
   }
 }
 
-EulerianList* union_eulerelement(EulerianList *result, size_t element) {
-  result->node = element;
-  result->weight = 0;
-  result->next = malloc(sizeof(EulerianList));
-  result = result->next;
-  result->node = -1;
-  result->weight = 0;
-  return result;
+void union_eulerelement(EulerianList *result, size_t element) {
+  EulerianList *tmp = result;
+  while(tmp->next != NULL) {
+    tmp = tmp->next;
+  }
+  EulerianList *newElement = malloc(sizeof(EulerianList));
+  newElement->node = element;
+  newElement->weight = 0;
+  newElement->next = NULL;
+  tmp->next = newElement;
 }
 
 size_t size(EulerianList *list) {
@@ -155,17 +157,16 @@ size_t size(EulerianList *list) {
   return count;
 }
 
-void union_eulerlist(EulerianList *dst, EulerianList *src) {
-  while (dst->node != src->node) {
-    dst = dst->next;
+void union_eulerlist(EulerianList **dst, EulerianList *src) {
+  EulerianList *destination = *dst;
+  while (destination->node != src->node) {
+    destination = destination->next;
   }
-  EulerianList *tmp = dst;
-  tmp = dst->next;
-  dst->next = src;
-  while (src->next->node != -1) {
+  EulerianList *tmp = destination->next;
+  destination = src;
+  while (src->next != NULL) {
     src = src->next;
   }
-  free(src->next);
   src->next = tmp;
 }
 
@@ -173,18 +174,18 @@ EulerianList* parse(Graph *graph, size_t x) {
   EulerianList *result = malloc(sizeof(EulerianList));
   result->node = x;
   result->weight = 0;
-  EulerianList *iterator = union_eulerelement(result, x);
+  result->next = NULL;
   size_t current = x;
   while (graph->adjList[current]->neighbour != -1) {
     Neighbour *n = graph->adjList[current];
-    union_eulerelement(iterator, n->neighbour);
-    remove_edge(graph, n->edgeName);
+    union_eulerelement(result, n->neighbour);
     current = n->neighbour;
+    remove_edge(graph, n->edgeName);
   }
   EulerianList *tmp = result;
-  while (tmp->next->node != -1) {
+  while (tmp->next != NULL) {
     tmp = tmp->next;
-    union_eulerlist(result, parse(graph, tmp->node));
+    union_eulerlist(&result, parse(graph, tmp->node));
   }
   return result;
 }
@@ -192,14 +193,11 @@ EulerianList* parse(Graph *graph, size_t x) {
 void buildEulerianCircuit(Graph *graph) {
   Graph copy = {0};
   EulerianPath result = {0};
-  EulerianList *list = malloc(sizeof(EulerianList));
-  list->node = 0;
-  list->weight = 0;
-  union_eulerelement(list, 0);
+  EulerianList *list;
   copyGraph(graph, &copy);
   for (size_t i = 0; i < copy.nbMaxNodes; i++) {
     if (copy.adjList[i]->neighbour != -1) {
-      union_eulerlist(list, parse(&copy, i));
+      list = parse(&copy, i);
     }
   }
   result.start = list;
@@ -261,7 +259,7 @@ void output_result(EulerianPath *path, FILE *stream) {
   fprintf(stream, "H(%d) = %zu : ", path->heuristicNumber, path->totalWeight);
   EulerianList *pathList = path->start;
   while(pathList->next != NULL) {
-    fprintf(stream, "%zu --(%zu)--> ", pathList->node, pathList->weight);
+    fprintf(stream, "%zu --(%zu)--> ", pathList->node+1, pathList->weight);
     pathList = pathList->next;
   }
   fprintf(stream, "%zu\n", pathList->node);
