@@ -48,7 +48,7 @@ int main() {
 //*
 int main() {
   Graph graph = {0};
-  createExampleEulerian(&graph);
+  createExampleHalfEulerian(&graph);
   getEulerianCircuit(&graph, 1);
 }
 //*/

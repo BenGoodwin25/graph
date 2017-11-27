@@ -158,6 +158,10 @@ size_t size(EulerianList *list) {
 }
 
 void union_eulerlist(EulerianList **dst, EulerianList *src) {
+  if(*dst == NULL) {
+    *dst = src;
+    return;
+  }
   EulerianList *destination = *dst;
   while (destination->node != src->node) {
     destination = destination->next;
@@ -190,17 +194,42 @@ EulerianList* parse(Graph *graph, size_t x) {
   return result;
 }
 
+void rebuildPathWeight(Graph *graph, EulerianPath *path) {
+  size_t totalWeight = 0;
+  EulerianList *list = path->start;
+  while(list->next != NULL) {
+    Neighbour *n = graph->adjList[list->node];
+    while (n->neighbour != list->next->node) {
+      n = n->nextNeighbour;
+    }
+    list->weight = n->weight;
+    totalWeight += list->weight;
+    list = list->next;
+  }
+  path->totalWeight = totalWeight;
+}
+
+void buildEulerianPath(Graph *graph) {
+  Graph copy = {0};
+  EulerianPath result = {0};
+  EulerianList *list = NULL;
+  copyGraph(graph, &copy);
+  // find the first odd degree node
+  //
+}
+
 void buildEulerianCircuit(Graph *graph) {
   Graph copy = {0};
   EulerianPath result = {0};
-  EulerianList *list;
+  EulerianList *list = NULL;
   copyGraph(graph, &copy);
   for (size_t i = 0; i < copy.nbMaxNodes; i++) {
     if (copy.adjList[i]->neighbour != -1) {
-      list = parse(&copy, i);
+      union_eulerlist(&list, parse(&copy, i));
     }
   }
   result.start = list;
+  rebuildPathWeight(graph, &result);
   output_result(&result, stdout);
 }
 
@@ -229,7 +258,7 @@ size_t getEulerianCircuit(Graph *self, size_t heuristic){
       break;
   }
   if (isHalfEulerian) {
-    // TODO: do half eulerian by joining one odd degree node to the other
+    buildEulerianPath(self);
   } else {
     buildEulerianCircuit(self);
   }
@@ -345,15 +374,15 @@ void createExampleHalfEulerian(Graph *self) {
   add_node(self, 4);
   add_node(self, 5);
   add_node(self, 6);
-  add_edge(self, 1, 2, 0, 1, false);
-  add_edge(self, 1, 3, 1, 1, false);
+  add_edge(self, 1, 2, 0, 8, false);
+  add_edge(self, 1, 3, 1, 3, false);
   add_edge(self, 2, 3, 2, 1, false);
-  add_edge(self, 2, 4, 3, 1, false);
-  add_edge(self, 2, 5, 4, 1, false);
-  add_edge(self, 3, 4, 5, 1, false);
-  add_edge(self, 3, 6, 6, 1, false);
+  add_edge(self, 2, 4, 3, 9, false);
+  add_edge(self, 2, 5, 4, 4, false);
+  add_edge(self, 3, 4, 5, 10, false);
+  add_edge(self, 3, 6, 6, 6, false);
   add_edge(self, 4, 5, 7, 1, false);
-  add_edge(self, 4, 6, 8, 1, false);
+  add_edge(self, 4, 6, 8, 8, false);
   add_edge(self, 5, 6, 9, 1, false);
   printf("# Example half eulerian graph created!\n");
 }
