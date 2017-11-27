@@ -9,7 +9,7 @@ size_t getNodeDegree(Neighbour *self);
 void print_matrix(Matrix *self);
 void convertToWeightMatrix(Graph *g, Matrix *weights);
 void convertToPredecessorMatrix(Graph *g, Matrix *predecessor);
-void computeChineseCircuit(Graph *self, size_t heuristic);
+void graphToEulerianGraph(Graph *self, size_t heuristic);
 void union_eulerelement(EulerianList *result, size_t element);
 void union_eulerlist(EulerianList **dst, EulerianList *src);
 size_t size(EulerianList *list);
@@ -134,7 +134,7 @@ size_t getEulerianCircuit(Graph *self, size_t heuristic){
       break;
     case GRAPH_NON_EULERIAN:
       printf("# The graph isn't eulerian.\n");
-      computeChineseCircuit(self, heuristic);
+      graphToEulerianGraph(self, heuristic);
       break;
     default:
       break;
@@ -307,10 +307,24 @@ void convertToPredecessorMatrix(Graph *g, Matrix *predecessor) {
   }
 }
 
-void computeChineseCircuit(Graph *self, size_t heuristic) {
+void graphToEulerianGraph(Graph *self, size_t heuristic) {
   // TODO: compute chinese circuit
+  /*
+   * 1 : Enumerate all the possible pairwise matching of the odd degree nodes
+   * 2 : Compute the shortest distance between any two nodes (eg. Floy_Warshall, maybe replace with Dijkstra Algorithm...)
+   * 3 : Compute the cost of each pairwise matching and retain the best one
+   * 4 : Duplicate for each pair (x, y) of the best matching the edges that are on the shortest path for x to y
+   * 5 : give the "new" graph back to compute the eulerian circuit
+   *
+  */
+  // find all odd degree nodes :
+  bool oddDegreeNodes[self->nbMaxNodes];
+  for (size_t i = 0; i < self->nbMaxNodes; i++) {
+    oddDegreeNodes[i] = getNodeDegree(self->adjList[i]) % 2 == 1;
+  }
+  // TODO: ?
   if (heuristic == 1) {
-    // Floyd_Warshall
+    // NOT FLOYD_WARSHALL!!!!
   }
 }
 
