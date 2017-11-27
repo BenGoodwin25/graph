@@ -86,48 +86,6 @@ size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs);
 size_t getEulerianCircuit(Graph *self, size_t heuristic);
 
 /*
- * Function : output result to stream (stdout, FILE)
- *
- * Param :
- *  self :  The result to output
- *  stream : output stream
- *
- * Return :
- *  error code 0 : function correctly executed
- *  error code 1 : function couldn't be done
- *  error code 20 : function not yet implemented
- */
-size_t outputResultsToStream(size_t *self, FILE *stream);
-
-/*
- * Function : output result to stdout, call of outputResultsToStream()
- *
- * Param :
- *  self :  The result to display
- *
- * Return :
- *  error code 0 : function correctly executed
- *  error code 1 : function couldn't be done
- *  error code 20 : function not yet implemented
- */
-size_t displayResults(size_t *self);
-
-void output_result(EulerianPath *path, FILE *stream);
-
-/*
- * Function : Check that a graph is connected or not
- *
- * Param :
- *  self :  The graph to check if it is eulerian
- *
- * Return :
- *  error code 0 : function correctly executed
- *  error code 1 : function couldn't be done
- *  error code 20 : function not yet implemented
- */
-size_t isConnected(Graph *self, bool *connectedResult);
-
-/*
  * Function : check if a graph is eulerian or not
  *
  * Param :
@@ -179,5 +137,7 @@ void createExampleHalfEulerian(Graph *self);
  *  error code 20 : function not yet implemented
  */
 void createExampleEulerian(Graph *self);
+
+void output_result(EulerianPath *path, FILE *stream);
 
 #endif //GRAPH_GRAPH_H

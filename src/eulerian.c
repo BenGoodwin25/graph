@@ -1,14 +1,26 @@
 #include <eulerian.h>
 #include <stdio.h>
 
-size_t getNodeDegree(Neighbour *self) {
-  size_t degree = 0;
-  while (self->neighbour != -1) {
-    degree++;
-    self = self->nextNeighbour;
-  }
-  return degree;
-}
+/*****************************************/
+/** INTERNAL FILE FUNCTIONS DECLARATION **/
+/*****************************************/
+
+size_t getNodeDegree(Neighbour *self);
+void print_matrix(Matrix *self);
+void convertToWeightMatrix(Graph *g, Matrix *weights);
+void convertToPredecessorMatrix(Graph *g, Matrix *predecessor);
+void computeChineseCircuit(Graph *self, size_t heuristic);
+void union_eulerelement(EulerianList *result, size_t element);
+void union_eulerlist(EulerianList **dst, EulerianList *src);
+size_t size(EulerianList *list);
+EulerianList* parse(Graph *graph, size_t x);
+void rebuildPathWeight(Graph *graph, EulerianPath *path);
+void buildEulerianPath(Graph *graph, size_t heuristicNumber);
+void buildEulerianCircuit(Graph *graph, size_t heuristicNumber);
+
+/**********************/
+/** PUBLIC FUNCTIONS **/
+/**********************/
 
 size_t copyGraph(Graph *source, Graph *destination){
   delete_graph(destination);
@@ -31,41 +43,6 @@ size_t copyGraph(Graph *source, Graph *destination){
   }
 
   return 0;
-}
-
-void print_matrix(Matrix *self){
-  printf("______________________________________________________\n");
-  for(size_t i = 0; i < self->maxNodes; i++) {
-    for(size_t j = 0; j < self->maxNodes; j++) {
-      printf(" | %4zd", self->value[i][j]);
-    }
-    printf(" | \n");
-  }
-}
-
-void convertToWeightMatrix(Graph *g, Matrix *weights) {
-  for (size_t i = 0; i < g->nbMaxNodes; i++) {
-    if(is_node_exists(g, i)){
-      Neighbour *tmp = g->adjList[i];
-      weights->value[i][i] = 0;
-      while (tmp->neighbour != -1) {
-        weights->value[i][tmp->neighbour] = tmp->weight;
-        tmp = tmp->nextNeighbour;
-      }
-    }
-  }
-}
-
-void convertToPredecessorMatrix(Graph *g, Matrix *predecessor) {
-  for (size_t i = 0; i < g->nbMaxNodes; i++) {
-    if(is_node_exists(g, i)){
-      Neighbour *tmp = g->adjList[i];
-      while (tmp->neighbour != -1) {
-        predecessor->value[tmp->neighbour][i] = i;
-        tmp = tmp->nextNeighbour;
-      }
-    }
-  }
 }
 
 size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessor){
@@ -138,122 +115,6 @@ size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs){
   return 20;
 }
 
-void computeChineseCircuit(Graph *self, size_t heuristic) {
-  // TODO: compute chinese circuit
-  if (heuristic == 1) {
-    // Floyd_Warshall
-  }
-}
-
-void union_eulerelement(EulerianList *result, size_t element) {
-  EulerianList *tmp = result;
-  while(tmp->next != NULL) {
-    tmp = tmp->next;
-  }
-  EulerianList *newElement = malloc(sizeof(EulerianList));
-  newElement->node = element;
-  newElement->weight = 0;
-  newElement->next = NULL;
-  tmp->next = newElement;
-}
-
-size_t size(EulerianList *list) {
-  size_t count = 0;
-  while (list->node != -1) {
-    count++;
-    list = list->next;
-  }
-  return count;
-}
-
-void union_eulerlist(EulerianList **dst, EulerianList *src) {
-  if(*dst == NULL) {
-    *dst = src;
-    return;
-  }
-  EulerianList *destination = *dst;
-  while (destination->node != src->node) {
-    destination = destination->next;
-  }
-  EulerianList *tmp = destination->next;
-  destination = src;
-  while (src->next != NULL) {
-    src = src->next;
-  }
-  src->next = tmp;
-}
-
-EulerianList* parse(Graph *graph, size_t x) {
-  EulerianList *result = malloc(sizeof(EulerianList));
-  result->node = x;
-  result->weight = 0;
-  result->next = NULL;
-  size_t current = x;
-  while (graph->adjList[current]->neighbour != -1) {
-    Neighbour *n = graph->adjList[current];
-    union_eulerelement(result, n->neighbour);
-    current = n->neighbour;
-    remove_edge(graph, n->edgeName);
-  }
-  EulerianList *tmp = result;
-  while (tmp->next != NULL) {
-    tmp = tmp->next;
-    union_eulerlist(&result, parse(graph, tmp->node));
-  }
-  return result;
-}
-
-void rebuildPathWeight(Graph *graph, EulerianPath *path) {
-  size_t totalWeight = 0;
-  EulerianList *list = path->start;
-  while(list->next != NULL) {
-    Neighbour *n = graph->adjList[list->node];
-    while (n->neighbour != list->next->node) {
-      n = n->nextNeighbour;
-    }
-    list->weight = n->weight;
-    totalWeight += list->weight;
-    list = list->next;
-  }
-  path->totalWeight = totalWeight;
-}
-
-void buildEulerianPath(Graph *graph) {
-  Graph copy = {0};
-  EulerianPath result = {0};
-  EulerianList *list = NULL;
-  copyGraph(graph, &copy);
-  // find the first odd degree node
-  size_t oddNode = 0;
-  while (getNodeDegree(graph->adjList[oddNode]) % 2 == 0) {
-    oddNode++;
-  }
-  union_eulerlist(&list, parse(&copy, oddNode));
-  for (size_t i = 0; i < copy.nbMaxNodes; i++) {
-    if (copy.adjList[i]->neighbour != -1) {
-      union_eulerlist(&list, parse(&copy, i));
-    }
-  }
-  result.start = list;
-  rebuildPathWeight(graph, &result);
-  output_result(&result, stdout);
-}
-
-void buildEulerianCircuit(Graph *graph) {
-  Graph copy = {0};
-  EulerianPath result = {0};
-  EulerianList *list = NULL;
-  copyGraph(graph, &copy);
-  for (size_t i = 0; i < copy.nbMaxNodes; i++) {
-    if (copy.adjList[i]->neighbour != -1) {
-      union_eulerlist(&list, parse(&copy, i));
-    }
-  }
-  result.start = list;
-  rebuildPathWeight(graph, &result);
-  output_result(&result, stdout);
-}
-
 size_t getEulerianCircuit(Graph *self, size_t heuristic){
   /*FILE name;
   size_t error=0;
@@ -279,51 +140,11 @@ size_t getEulerianCircuit(Graph *self, size_t heuristic){
       break;
   }
   if (isHalfEulerian) {
-    buildEulerianPath(self);
+    buildEulerianPath(self, heuristic);
   } else {
-    buildEulerianCircuit(self);
+    buildEulerianCircuit(self, heuristic);
   }
   return 20;
-}
-
-size_t outputResultsToStream(size_t *self, FILE *stream){
-  /*
-  H(1) = 40 : 1 --(the predecessor matrix of self20)--> 2 --(10)--> 3 --(10)--> 4
-  H(2) = 60 : 1 --(30)--> 3 --(10)--> 2 --(20)--> 4
-  */
-  return 20;
-}
-
-size_t displayResults(size_t *self) {
-  /*
-  if (Verify result have been calculated) {
-    LOG_ERROR("result have to be calculated !\n");
-    return 1;
-  }
-  return outputResultsToStream(self, stdout);
-  //*/
-  return 20;
-}
-
-void output_result(EulerianPath *path, FILE *stream) {
-  fprintf(stream, "H(%d) = %zu : ", path->heuristicNumber, path->totalWeight);
-  EulerianList *pathList = path->start;
-  while(pathList->next != NULL) {
-    fprintf(stream, "%zu --(%zu)--> ", pathList->node+1, pathList->weight);
-    pathList = pathList->next;
-  }
-  fprintf(stream, "%zu\n", pathList->node+1);
-}
-
-void checkVisited(Graph *graph, size_t v, bool visited[]) {
-  visited[v] = true;
-  Neighbour *tmp = graph->adjList[v];
-  while (tmp->neighbour != -1) {
-    if (!visited[tmp->neighbour]) {
-      checkVisited(graph, tmp->neighbour, visited);
-    }
-    tmp = tmp->nextNeighbour;
-  }
 }
 
 size_t isEulerian(Graph *self, size_t *eulerianResult) {
@@ -426,4 +247,180 @@ void createExampleEulerian(Graph *self) {
   add_edge(self, 7, 8, 12, 1, false);
   add_edge(self, 9, 10, 13, 3, false);
   printf("# Example eulerian graph created!\n");
+}
+
+void output_result(EulerianPath *path, FILE *stream) {
+  fprintf(stream, "H(%d) = %zu : ", path->heuristicNumber, path->totalWeight);
+  EulerianList *pathList = path->start;
+  while(pathList->next != NULL) {
+    fprintf(stream, "%zu --(%zu)--> ", pathList->node+1, pathList->weight);
+    pathList = pathList->next;
+  }
+  fprintf(stream, "%zu\n", pathList->node+1);
+}
+
+/****************************/
+/** PRIVATE FILE FUNCTIONS **/
+/****************************/
+
+size_t getNodeDegree(Neighbour *self) {
+  size_t degree = 0;
+  while (self->neighbour != -1) {
+    degree++;
+    self = self->nextNeighbour;
+  }
+  return degree;
+}
+
+void print_matrix(Matrix *self){
+  printf("______________________________________________________\n");
+  for(size_t i = 0; i < self->maxNodes; i++) {
+    for(size_t j = 0; j < self->maxNodes; j++) {
+      printf(" | %4zd", self->value[i][j]);
+    }
+    printf(" | \n");
+  }
+}
+
+void convertToWeightMatrix(Graph *g, Matrix *weights) {
+  for (size_t i = 0; i < g->nbMaxNodes; i++) {
+    if(is_node_exists(g, i)){
+      Neighbour *tmp = g->adjList[i];
+      weights->value[i][i] = 0;
+      while (tmp->neighbour != -1) {
+        weights->value[i][tmp->neighbour] = tmp->weight;
+        tmp = tmp->nextNeighbour;
+      }
+    }
+  }
+}
+
+void convertToPredecessorMatrix(Graph *g, Matrix *predecessor) {
+  for (size_t i = 0; i < g->nbMaxNodes; i++) {
+    if(is_node_exists(g, i)){
+      Neighbour *tmp = g->adjList[i];
+      while (tmp->neighbour != -1) {
+        predecessor->value[tmp->neighbour][i] = i;
+        tmp = tmp->nextNeighbour;
+      }
+    }
+  }
+}
+
+void computeChineseCircuit(Graph *self, size_t heuristic) {
+  // TODO: compute chinese circuit
+  if (heuristic == 1) {
+    // Floyd_Warshall
+  }
+}
+
+void union_eulerelement(EulerianList *result, size_t element) {
+  EulerianList *tmp = result;
+  while(tmp->next != NULL) {
+    tmp = tmp->next;
+  }
+  EulerianList *newElement = malloc(sizeof(EulerianList));
+  newElement->node = element;
+  newElement->weight = 0;
+  newElement->next = NULL;
+  tmp->next = newElement;
+}
+
+void union_eulerlist(EulerianList **dst, EulerianList *src) {
+  if(*dst == NULL) {
+    *dst = src;
+    return;
+  }
+  EulerianList *destination = *dst;
+  while (destination->node != src->node) {
+    destination = destination->next;
+  }
+  EulerianList *tmp = destination->next;
+  destination = src;
+  while (src->next != NULL) {
+    src = src->next;
+  }
+  src->next = tmp;
+}
+
+size_t size(EulerianList *list) {
+  size_t count = 0;
+  while (list->node != -1) {
+    count++;
+    list = list->next;
+  }
+  return count;
+}
+
+EulerianList* parse(Graph *graph, size_t x) {
+  EulerianList *result = malloc(sizeof(EulerianList));
+  result->node = x;
+  result->weight = 0;
+  result->next = NULL;
+  size_t current = x;
+  while (graph->adjList[current]->neighbour != -1) {
+    Neighbour *n = graph->adjList[current];
+    union_eulerelement(result, n->neighbour);
+    current = n->neighbour;
+    remove_edge(graph, n->edgeName);
+  }
+  EulerianList *tmp = result;
+  while (tmp->next != NULL) {
+    tmp = tmp->next;
+    union_eulerlist(&result, parse(graph, tmp->node));
+  }
+  return result;
+}
+
+void rebuildPathWeight(Graph *graph, EulerianPath *path) {
+  size_t totalWeight = 0;
+  EulerianList *list = path->start;
+  while(list->next != NULL) {
+    Neighbour *n = graph->adjList[list->node];
+    while (n->neighbour != list->next->node) {
+      n = n->nextNeighbour;
+    }
+    list->weight = n->weight;
+    totalWeight += list->weight;
+    list = list->next;
+  }
+  path->totalWeight = totalWeight;
+}
+
+void buildEulerianPath(Graph *graph, size_t heuristicNumber) {
+  Graph copy = {0};
+  EulerianPath result = {0};
+  EulerianList *list = NULL;
+  copyGraph(graph, &copy);
+  // find the first odd degree node
+  size_t oddNode = 0;
+  while (getNodeDegree(graph->adjList[oddNode]) % 2 == 0) {
+    oddNode++;
+  }
+  union_eulerlist(&list, parse(&copy, oddNode));
+  for (size_t i = 0; i < copy.nbMaxNodes; i++) {
+    if (copy.adjList[i]->neighbour != -1) {
+      union_eulerlist(&list, parse(&copy, i));
+    }
+  }
+  result.start = list;
+  result.heuristicNumber = heuristicNumber;
+  rebuildPathWeight(graph, &result);
+  output_result(&result, stdout);
+}
+
+void buildEulerianCircuit(Graph *graph, size_t heuristicNumber) {
+  Graph copy = {0};
+  EulerianPath result = {0};
+  EulerianList *list = NULL;
+  copyGraph(graph, &copy);
+  for (size_t i = 0; i < copy.nbMaxNodes; i++) {
+    if (copy.adjList[i]->neighbour != -1) {
+      union_eulerlist(&list, parse(&copy, i));
+    }
+  }
+  result.start = list;
+  result.heuristicNumber = heuristicNumber;
+  rebuildPathWeight(graph, &result);
+  output_result(&result, stdout);
 }
