@@ -1,5 +1,6 @@
 #include <eulerian.h>
 #include <stdio.h>
+#include <limits.h>
 
 /*****************************************/
 /** INTERNAL FILE FUNCTIONS DECLARATION **/
@@ -45,7 +46,7 @@ size_t copyGraph(Graph *source, Graph *destination){
   return 0;
 }
 
-size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessor){
+size_t Floyd_Warshall(Graph *g, Matrix *weights){
   /*
   for each node z ∈ V {
     for each node x ∈ V {
@@ -59,22 +60,21 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessor){
   }
   */
   create_matrix(weights, g->nbMaxNodes, g->isDirected);
-  create_matrix(predecessor, g->nbMaxNodes, g->isDirected);
   convertToWeightMatrix(g, weights);
-  convertToPredecessorMatrix(g, predecessor);
   for(size_t z = 0; z < weights->maxNodes; z++) {
     for(size_t x = 0; x < weights->maxNodes; x++) {
       for (size_t y = 0; y < weights->maxNodes; y++) {
-        if(weights->value[x][z] != -1
-            && weights->value[z][y] != -1
+        if(weights->value[x][z] != INT_MAX
+            && weights->value[z][y] != INT_MAX
             && weights->value[x][z] + weights->value[z][y] < weights->value[x][y])
         {
           weights->value[x][y] = weights->value[x][z] + weights->value[z][y];
-          predecessor->value[x][y] = z;
         }
       }
     }
   }
+  print_matrix(weights);
+  //print_matrix(predecessor);
   /*
   EulerianPath path = {0};
   output_result(&path, stdout);
@@ -166,12 +166,13 @@ size_t isEulerian(Graph *self, size_t *eulerianResult) {
 }
 
 void createExampleNonEulerian(Graph *self) {
-  create_graph(self, 12, false);
+  create_graph(self, 5, false);
   add_node(self, 1);
   add_node(self, 2);
   add_node(self, 3);
   add_node(self, 4);
   add_node(self, 5);
+/*
   add_node(self, 6);
   add_node(self, 7);
   add_node(self, 8);
@@ -179,12 +180,14 @@ void createExampleNonEulerian(Graph *self) {
   add_node(self, 10);
   add_node(self, 11);
   add_node(self, 12);
+*/
   add_edge(self, 1, 2, 0, 1, false);
   add_edge(self, 1, 3, 1, 1, false);
   add_edge(self, 2, 3, 2, 5, false);
   add_edge(self, 2, 4, 3, 2, false);
   add_edge(self, 3, 4, 4, 1, false);
   add_edge(self, 4, 5, 5, 2, false);
+/*
   add_edge(self, 5, 6, 6, 2, false);
   add_edge(self, 5, 7, 7, 3, false);
   add_edge(self, 6, 7, 8, 15, false);
@@ -196,6 +199,7 @@ void createExampleNonEulerian(Graph *self) {
   add_edge(self, 10, 11, 14, 50, false);
   add_edge(self, 10, 12, 15, 2, false);
   add_edge(self, 11, 12, 16, 3, false);
+*/
   printf("# Example non eulerian graph created!\n");
 }
 
@@ -276,7 +280,7 @@ void print_matrix(Matrix *self){
   printf("______________________________________________________\n");
   for(size_t i = 0; i < self->maxNodes; i++) {
     for(size_t j = 0; j < self->maxNodes; j++) {
-      printf(" | %4zd", self->value[i][j]);
+      printf(" | %11d", self->value[i][j]);
     }
     printf(" | \n");
   }
