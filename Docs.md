@@ -10,6 +10,8 @@ Chinese Postman :
  
 - Compute on Euleran circuit in the now Eulerian augmented Graph
 
+
+
 Comment pattern :
 
 /*
