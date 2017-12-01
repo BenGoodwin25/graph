@@ -1,4 +1,5 @@
 #include <matrix.h>
+#include <limits.h>
 
 size_t create_matrix(Matrix *self, size_t maxNodes, bool isDirected){
   // init basic vars
@@ -25,7 +26,7 @@ size_t create_matrix(Matrix *self, size_t maxNodes, bool isDirected){
 
   for(size_t i = 0; i < self->maxNodes; i++){
     for(size_t f = 0; f < self->maxNodes; f++){
-      self->value[i][f] = -1;
+      self->value[i][f] = INT_MAX;
     }
   }
   return 0;

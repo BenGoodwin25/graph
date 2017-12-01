@@ -33,22 +33,20 @@ int main() {
 }
 //*/
 
-/*
+//*
 int main() {
   Graph graph = {0};
   createExampleNonEulerian(&graph);
   Matrix *m0 = malloc(sizeof(Matrix));
   Matrix *m1 = malloc(sizeof(Matrix));
-  create_matrix(m0, graph.nbMaxNodes, graph.isDirected);
-  create_matrix(m1, graph.nbMaxNodes, graph.isDirected);
   Floyd_Warshall(&graph, m0, m1);
 }
 //*/
 
-//*
+/*
 int main() {
   Graph graph = {0};
-  createExampleEulerian(&graph);
+  createExampleHalfEulerian(&graph);
   getEulerianCircuit(&graph, 1);
 }
 //*/
