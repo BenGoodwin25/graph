@@ -12,7 +12,6 @@
 typedef struct _matrix{
   size_t maxNodes;
   int **value;
-  bool isDirected;
 } Matrix;
 
 
@@ -29,7 +28,7 @@ typedef struct _matrix{
  *  error code 1 : create couldn't be executed
  *  error code 20 : function not yet implemented
  */
-size_t create_matrix(Matrix *self, size_t maxNodes, bool isDirected);
+size_t create_matrix(Matrix *self, size_t maxNodes);
 
 /*
  * Function : deletion of a matrix

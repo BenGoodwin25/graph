@@ -59,7 +59,14 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights){
     }
   }
   */
-  create_matrix(weights, g->nbMaxNodes, g->isDirected);
+  create_matrix(weights, g->nbMaxNodes);
+  EulerianList ***paths = malloc(g->nbMaxNodes * sizeof(EulerianList**));
+  for (size_t i = 0; i < g->nbMaxNodes; i++) {
+    paths[i] = malloc(g->nbMaxNodes * sizeof(EulerianList*));
+    for (size_t j = 0; j < g->nbMaxNodes; j++) {
+      paths[i][j] = NULL;
+    }
+  }
   convertToWeightMatrix(g, weights);
   for(size_t z = 0; z < weights->maxNodes; z++) {
     for(size_t x = 0; x < weights->maxNodes; x++) {
@@ -73,7 +80,7 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights){
       }
     }
   }
-  print_matrix(weights);
+  //print_matrix(weights);
   //print_matrix(predecessor);
   /*
   EulerianPath path = {0};
@@ -123,14 +130,12 @@ size_t getEulerianCircuit(Graph *self, size_t heuristic){
   return error;*/
   size_t result = 10;
   isEulerian(self, &result);
-  bool isHalfEulerian = false;
   switch (result) {
     case GRAPH_EULERIAN:
       printf("# The graph is eulerian.\n");
       break;
     case GRAPH_HALF_EULERIAN:
       printf("# The graph is half eulerian.\n");
-      isHalfEulerian = true;
       break;
     case GRAPH_NON_EULERIAN:
       printf("# The graph isn't eulerian.\n");
@@ -139,7 +144,7 @@ size_t getEulerianCircuit(Graph *self, size_t heuristic){
     default:
       break;
   }
-  if (isHalfEulerian) {
+  if (result == GRAPH_HALF_EULERIAN) {
     buildEulerianPath(self, heuristic);
   } else {
     buildEulerianCircuit(self, heuristic);
@@ -172,34 +177,34 @@ void createExampleNonEulerian(Graph *self) {
   add_node(self, 3);
   add_node(self, 4);
   add_node(self, 5);
-/*
-  add_node(self, 6);
-  add_node(self, 7);
-  add_node(self, 8);
-  add_node(self, 9);
-  add_node(self, 10);
-  add_node(self, 11);
-  add_node(self, 12);
-*/
+  /*
+    add_node(self, 6);
+    add_node(self, 7);
+    add_node(self, 8);
+    add_node(self, 9);
+    add_node(self, 10);
+    add_node(self, 11);
+    add_node(self, 12);
+  */
   add_edge(self, 1, 2, 0, 1, false);
   add_edge(self, 1, 3, 1, 1, false);
   add_edge(self, 2, 3, 2, 5, false);
   add_edge(self, 2, 4, 3, 2, false);
   add_edge(self, 3, 4, 4, 1, false);
   add_edge(self, 4, 5, 5, 2, false);
-/*
-  add_edge(self, 5, 6, 6, 2, false);
-  add_edge(self, 5, 7, 7, 3, false);
-  add_edge(self, 6, 7, 8, 15, false);
-  add_edge(self, 6, 8, 9, 1, false);
-  add_edge(self, 7, 8, 10, 3, false);
-  add_edge(self, 8, 9, 11, 1, false);
-  add_edge(self, 9, 10, 12, 1, false);
-  add_edge(self, 9, 11, 13, 5, false);
-  add_edge(self, 10, 11, 14, 50, false);
-  add_edge(self, 10, 12, 15, 2, false);
-  add_edge(self, 11, 12, 16, 3, false);
-*/
+  /*
+    add_edge(self, 5, 6, 6, 2, false);
+    add_edge(self, 5, 7, 7, 3, false);
+    add_edge(self, 6, 7, 8, 15, false);
+    add_edge(self, 6, 8, 9, 1, false);
+    add_edge(self, 7, 8, 10, 3, false);
+    add_edge(self, 8, 9, 11, 1, false);
+    add_edge(self, 9, 10, 12, 1, false);
+    add_edge(self, 9, 11, 13, 5, false);
+    add_edge(self, 10, 11, 14, 50, false);
+    add_edge(self, 10, 12, 15, 2, false);
+    add_edge(self, 11, 12, 16, 3, false);
+  */
   printf("# Example non eulerian graph created!\n");
 }
 
@@ -326,10 +331,13 @@ void graphToEulerianGraph(Graph *self, size_t heuristic) {
   for (size_t i = 0; i < self->nbMaxNodes; i++) {
     oddDegreeNodes[i] = getNodeDegree(self->adjList[i]) % 2 == 1;
   }
-  // TODO: ?
+  //compute all shortest path
+  Matrix *shortest = malloc(sizeof(Matrix));
+  Floyd_Warshall(self, shortest);
   if (heuristic == 1) {
     // NOT FLOYD_WARSHALL!!!!
   }
+  free(shortest);
 }
 
 void union_eulerelement(EulerianList *result, size_t element) {

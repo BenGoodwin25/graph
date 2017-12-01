@@ -1,10 +1,9 @@
 #include <matrix.h>
 #include <limits.h>
 
-size_t create_matrix(Matrix *self, size_t maxNodes, bool isDirected){
+size_t create_matrix(Matrix *self, size_t maxNodes){
   // init basic vars
   self->maxNodes = maxNodes;
-  self->isDirected = isDirected;
 
   // init memory for columns
   self->value = malloc(maxNodes*sizeof(ssize_t*));
