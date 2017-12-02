@@ -54,7 +54,7 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors);
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-size_t minLengthPairwise(List *V, List *bestMatching, size_t *bestMatchingWeight, Matrix *weights, Matrix *predecessors);
+size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeight, Matrix *weights);
 
 /*
  * Function :

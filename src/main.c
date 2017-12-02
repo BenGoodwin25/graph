@@ -37,7 +37,7 @@ int main() {
 int main() {
   Graph graph = {0};
   createExampleNonEulerian(&graph);
-  graphToEulerianGraph(&graph, 1);
+  getEulerianCircuit(&graph, 1);
 }
 //*/
 

@@ -11,10 +11,12 @@ void print_matrix(Matrix *self);
 void convertToWeightMatrix(Graph *g, Matrix *weights);
 void convertToPredecessorMatrix(Graph *g, Matrix *predecessors);
 void graphToEulerianGraph(Graph *self, size_t heuristic);
+void duplicateEdgesFromPairwiseList(Graph *self, List *bestMatching, Matrix *predecessors);
 void union_eulerelement(EulerianList *result, size_t element);
 void union_eulerlist(EulerianList **dst, EulerianList *src);
 size_t size(EulerianList *list);
 size_t getPMWeight(List *pm, Matrix *weights);
+int getMaxEdgeName(Graph *self);
 EulerianList* parse(Graph *graph, size_t x);
 void rebuildPathWeight(Graph *graph, EulerianPath *path);
 void buildEulerianPath(Graph *graph, size_t heuristicNumber);
@@ -94,42 +96,8 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors){
   return 0;
 }
 
-size_t minLengthPairwise(List *V, List *bestMatching, size_t *bestMatchingWeight, Matrix *weights, Matrix *predecessors){
-  /*
-  bestMatching ← NULL;
-  bestMatchingWeight ← +∞;
-
-  LPM ← ∅;
-  LPM ← listPairs(V, ∅, LPM);
-
-  foreach (pairwise matching PM of LPM) {
-    if (weight(PM) < bestMatchingWeight) {
-      bestMatching ← PM;
-      bestMatchingWeight ← weigth(PM);
-    }
-  }
-
-  Input :
-  • V : list of odd degree nodes sorted by node number
-  Output :
-  • bestMatching: the minimal-length pairwise matching of V nodes
-  • bestMatchingWeight: the total weight of this minimal-length pairwise matching
-  bestMatching ← NULL;
-  bestMatchingWeight ← +∞;
-  // Generation of all possible pairwise matchings in a list of matchings LPM
-  LPM ← ∅;
-  LPM ← listPairs(V, ∅, LPM);
-  // Selecting the best matching by evaluating all of them
-  foreach pairwise matching PM of LPM do
-    // weight(PM) computes, thanks to M and P rec, the sum of the shortest
-    // distances between all pairs of PM
-    if weight(PM) < bestMatchingWeight then
-      bestMatching ← PM;
-      bestMatchingWeight ← weigth(PM);
-    end if
-  end foreach
-  //*/
-  bestMatching = NULL;
+size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeight, Matrix *weights){
+  *bestMatching = NULL;
   *bestMatchingWeight = INT_MAX;
 
   LList *lpm = NULL;
@@ -140,17 +108,19 @@ size_t minLengthPairwise(List *V, List *bestMatching, size_t *bestMatchingWeight
     List *pm = tmplpm->list;
     size_t pmWeight = getPMWeight(pm, weights);
     if (pmWeight < *bestMatchingWeight) {
-      bestMatching = pm;
+      *bestMatching = pm;
       *bestMatchingWeight = pmWeight;
     }
     tmplpm = tmplpm->next;
   }
 
+  /*
   printLList(lpm);
-  printList(bestMatching);
+  printList(*bestMatching);
   printf("Best matching weight : %zu\n", *bestMatchingWeight);
+  //*/
 
-  return 20;
+  return 0;
 }
 
 LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs){
@@ -386,7 +356,12 @@ void graphToEulerianGraph(Graph *self, size_t heuristic) {
   // get all costs of each pairwise matching for odd degree nodes
   List *bestMatching;
   size_t bestMWeight;
-  minLengthPairwise(oddDegreeNodes, bestMatching, &bestMWeight, shortest, predecessors);
+  minLengthPairwise(oddDegreeNodes, &bestMatching, &bestMWeight, shortest);
+  printList(bestMatching);
+  printf("%zu\n", bestMWeight);
+  duplicateEdgesFromPairwiseList(self, bestMatching, predecessors);
+
+  view_graph(self);
 
   if (heuristic == 1) {
     // NOT FLOYD_WARSHALL!!!!
@@ -394,6 +369,23 @@ void graphToEulerianGraph(Graph *self, size_t heuristic) {
 
   delete_matrix(shortest);
   delete_matrix(predecessors);
+}
+
+void duplicateEdgesFromPairwiseList(Graph *self, List *bestMatching, Matrix *predecessors) {
+  while (bestMatching != NULL) {
+    size_t start = bestMatching->value;
+    size_t end = bestMatching->next->value;
+    printf("Start : %zu / End : %zu\n", start, end);
+    int edgeName = getMaxEdgeName(self);
+
+    while (end != start) {
+      printf("End : %zu / Predecessor : %d\n", end, predecessors->value[start][end]);
+      add_edge(self, predecessors->value[start][end]+1, end+1, ++edgeName, self->adjList[predecessors->value[start][end]][end].weight, true);
+      end = predecessors->value[start][end];
+    }
+
+    bestMatching = bestMatching->next->next;
+  }
 }
 
 void union_eulerelement(EulerianList *result, size_t element) {
@@ -441,6 +433,18 @@ size_t getPMWeight(List *pm, Matrix *weights) {
     pm = pm->next->next;
   }
   return totalWeight;
+}
+
+int getMaxEdgeName(Graph *self) {
+  int maxEdgeName = -1;
+  for (size_t i = 0; i < self->nbMaxNodes; i++) {
+    Neighbour *n = self->adjList[i];
+    while (n->neighbour != -1) {
+      maxEdgeName = n->edgeName > maxEdgeName ? n->edgeName : maxEdgeName;
+      n = n->nextNeighbour;
+    }
+  }
+  return maxEdgeName;
 }
 
 EulerianList* parse(Graph *graph, size_t x) {
