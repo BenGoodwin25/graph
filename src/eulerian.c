@@ -9,14 +9,13 @@
 size_t getNodeDegree(Neighbour *self);
 void print_matrix(Matrix *self);
 void convertToWeightMatrix(Graph *g, Matrix *weights);
-void convertToPredecessorMatrix(Graph *g, Matrix *predecessor);
+void convertToPredecessorMatrix(Graph *g, Matrix *predecessors);
 void graphToEulerianGraph(Graph *self, size_t heuristic);
 void union_eulerelement(EulerianList *result, size_t element);
 void union_eulerlist(EulerianList **dst, EulerianList *src);
 size_t size(EulerianList *list);
 EulerianList* parse(Graph *graph, size_t x);
 void rebuildPathWeight(Graph *graph, EulerianPath *path);
-void constructPathFromGraph(Graph *graph, EulerianList ***paths);
 void buildEulerianPath(Graph *graph, size_t heuristicNumber);
 void buildEulerianCircuit(Graph *graph, size_t heuristicNumber);
 
@@ -47,34 +46,27 @@ size_t copyGraph(Graph *source, Graph *destination){
   return 0;
 }
 
-size_t Floyd_Warshall(Graph *g, Matrix *weights){
+size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors){
   /*
   for each node z ∈ V {
     for each node x ∈ V {
       for each node y ∈ V {
         if self(x, z) != +∞ and self(z, y) != +∞ and self(x, z) + self(z, y) < self(x, y) {
           self(x, y) ← self(x, z) + self(z, y);
-          predecessor(x, y) ← predecessor(z, y);
+          predecessors(x, y) ← predecessors(z, y);
         }
       }
     }
   }
   */
+
+  // Initialize our matricies
   create_matrix(weights, g->nbMaxNodes);
+  create_matrix(predecessors, g->nbMaxNodes);
   convertToWeightMatrix(g, weights);
+  convertToPredecessorMatrix(g, predecessors);
 
-  EulerianList ***paths = malloc(g->nbMaxNodes * sizeof(EulerianList**));
-  for (size_t i = 0; i < g->nbMaxNodes; i++) {
-    paths[i] = malloc(g->nbMaxNodes * sizeof(EulerianList*));
-    for (size_t j = 0; j < g->nbMaxNodes; j++) {
-      paths[i][j] = NULL;
-    }
-  }
-  constructPathFromGraph(g, paths);
-
-  // z : nb de sauts
-  // x : début
-  // y : fin
+  // Then apply the Floyd-Warshall algorithm
   for(size_t z = 0; z < weights->maxNodes; z++) {
     for(size_t x = 0; x < weights->maxNodes; x++) {
       for (size_t y = 0; y < weights->maxNodes; y++) {
@@ -83,16 +75,20 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights){
             && weights->value[x][z] + weights->value[z][y] < weights->value[x][y])
         {
           weights->value[x][y] = weights->value[x][z] + weights->value[z][y];
+          predecessors->value[x][y] = predecessors->value[z][y];
         }
       }
     }
   }
-  //print_matrix(weights);
-  //print_matrix(predecessor);
+
+  // Just a debug print
   /*
-  EulerianPath path = {0};
-  output_result(&path, stdout);
+  printf("Weights :\n");
+  print_matrix(weights);
+  printf("Predecessors :\n");
+  print_matrix(predecessors);
   //*/
+
   return 0;
 }
 
@@ -311,12 +307,12 @@ void convertToWeightMatrix(Graph *g, Matrix *weights) {
   }
 }
 
-void convertToPredecessorMatrix(Graph *g, Matrix *predecessor) {
+void convertToPredecessorMatrix(Graph *g, Matrix *predecessors) {
   for (size_t i = 0; i < g->nbMaxNodes; i++) {
     if(is_node_exists(g, i)){
       Neighbour *tmp = g->adjList[i];
       while (tmp->neighbour != -1) {
-        predecessor->value[tmp->neighbour][i] = i;
+        predecessors->value[i][tmp->neighbour] = i;
         tmp = tmp->nextNeighbour;
       }
     }
@@ -340,7 +336,8 @@ void graphToEulerianGraph(Graph *self, size_t heuristic) {
   }
   //compute all shortest path
   Matrix *shortest = malloc(sizeof(Matrix));
-  Floyd_Warshall(self, shortest);
+  Matrix *predecessors = malloc(sizeof(Matrix));
+  Floyd_Warshall(self, shortest, predecessors);
   if (heuristic == 1) {
     // NOT FLOYD_WARSHALL!!!!
   }
@@ -418,20 +415,6 @@ void rebuildPathWeight(Graph *graph, EulerianPath *path) {
     list = list->next;
   }
   path->totalWeight = totalWeight;
-}
-
-void constructPathFromGraph(Graph *graph, EulerianList ***paths){
-  for (size_t i = 0; i < graph->nbMaxNodes; i++) {
-    Neighbour *n = graph->adjList[i];
-    while (n->neighbour != -1) {
-      paths[i][n->neighbour] = malloc(sizeof(EulerianList));
-      paths[i][n->neighbour]->node = i;
-      paths[i][n->neighbour]->weight = n->weight;
-      paths[i][n->neighbour]->next = NULL;
-      union_eulerelement(paths[i][n->neighbour], n->neighbour);
-      n = n->nextNeighbour;
-    }
-  }
 }
 
 void buildEulerianPath(Graph *graph, size_t heuristicNumber) {

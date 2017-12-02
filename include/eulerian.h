@@ -32,14 +32,14 @@ size_t copyGraph(Graph *source, Graph *destination);
  * Param :
  *  G : a graph
  *  weights : matrix such that M(x, y) gives the shortest distance between nodes x and y
- *  predecessor : matrix such that P rec(x, y) gives the predecessor of y on the shortest path form x
+ *  predecessors : matrix such that P rec(x, y) gives the predecessors of y on the shortest path form x
  *
  * Return :
  *  error code 0 : function correctly executed
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-size_t Floyd_Warshall(Graph *g, Matrix *weights);
+size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors);
 
 /*
  * Function : Minimal-length Pairwise Matching by Enumeration
