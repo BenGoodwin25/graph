@@ -54,7 +54,7 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors);
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-size_t minLengthPairwise(size_t *V,List *bestMatching, List *bestMatchingWeight);
+size_t minLengthPairwise(List *V, List *bestMatching, size_t *bestMatchingWeight, Matrix *weights, Matrix *predecessors);
 
 /*
  * Function :
@@ -69,7 +69,7 @@ size_t minLengthPairwise(size_t *V,List *bestMatching, List *bestMatchingWeight)
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs);
+LList *listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs);
 
 /*
  * Function : get Eulerian circuit, display it and write it on a file

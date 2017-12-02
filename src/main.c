@@ -37,9 +37,7 @@ int main() {
 int main() {
   Graph graph = {0};
   createExampleNonEulerian(&graph);
-  Matrix *m0 = malloc(sizeof(Matrix));
-  Matrix *m1 = malloc(sizeof(Matrix));
-  Floyd_Warshall(&graph, m0, m1);
+  graphToEulerianGraph(&graph, 1);
 }
 //*/
 

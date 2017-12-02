@@ -14,7 +14,6 @@ typedef struct _matrix{
   int **value;
 } Matrix;
 
-
 /*
  * Function : creation of a matrix
  *

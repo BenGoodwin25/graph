@@ -18,6 +18,7 @@ EulerianList* parse(Graph *graph, size_t x);
 void rebuildPathWeight(Graph *graph, EulerianPath *path);
 void buildEulerianPath(Graph *graph, size_t heuristicNumber);
 void buildEulerianCircuit(Graph *graph, size_t heuristicNumber);
+void deleteMatrix(Matrix *self);
 
 /**********************/
 /** PUBLIC FUNCTIONS **/
@@ -92,7 +93,7 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors){
   return 0;
 }
 
-size_t minLengthPairwise(size_t *V, List *bestMatching, List *bestMatchingWeight){
+size_t minLengthPairwise(List *V, List *bestMatching, size_t *bestMatchingWeight, Matrix *weights, Matrix *predecessors){
   /*
   bestMatching ← NULL;
   bestMatchingWeight ← +∞;
@@ -106,23 +107,72 @@ size_t minLengthPairwise(size_t *V, List *bestMatching, List *bestMatchingWeight
       bestMatchingWeight ← weigth(PM);
     }
   }
-   */
+
+  Input :
+  • V : list of odd degree nodes sorted by node number
+  Output :
+  • bestMatching: the minimal-length pairwise matching of V nodes
+  • bestMatchingWeight: the total weight of this minimal-length pairwise matching
+  bestMatching ← NULL;
+  bestMatchingWeight ← +∞;
+  // Generation of all possible pairwise matchings in a list of matchings LPM
+  LPM ← ∅;
+  LPM ← listPairs(V, ∅, LPM);
+  // Selecting the best matching by evaluating all of them
+  foreach pairwise matching PM of LPM do
+    // weight(PM) computes, thanks to M and P rec, the sum of the shortest
+    // distances between all pairs of PM
+    if weight(PM) < bestMatchingWeight then
+      bestMatching ← PM;
+      bestMatchingWeight ← weigth(PM);
+    end if
+  end foreach
+  //*/
+  bestMatching = NULL;
+  *bestMatchingWeight = INT_MAX;
+
+  LList *LPM = NULL;
+  LPM = listPairs(V, NULL, LPM);
+
+  printLList(LPM);
+
   return 20;
 }
 
-size_t listPairs(size_t *V, List *currentListOfPairs, List *listsOfPairs){
+LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs){
   /*
-  if (V = ∅){
+  Input :
+    • V : the set of nodes to match by pairs (must have an even number of elements), ordered by node numbers
+    • currentListOfPairs: the current list of pairs under construction
+  Input-Output :
+    • listsOfPairs: The list (initially empty) of all the possible list of pairs
+
+  if V = ∅ then
     listsOfPairs ← listsOfPairs+currentListOfPairs;
-  } else {
+  else
     x ← min(V );
-    foreach (y ∈ V such that x < y) {
+    foreach y ∈ V such that x < y do
       listPairs(V − {x, y}, currentListOfPairs+(x, y), listsOfPairs);
+    end foreach
+  end if
+  return listsOfPairs;
+  //*/
+
+  if (V == NULL) {
+    addListToLists(&listsOfPairs, currentListOfPairs);
+  } else {
+    List *x = V;
+    for (List *y = x->next; y != NULL && x->value < y->value; y = y->next) {
+      List *lv = NULL;
+      cloneList(V, &lv);
+      deletePair(&lv, x->value, y->value);
+      List *clop = NULL;
+      cloneList(currentListOfPairs, &clop);
+      addPair(&clop, x->value, y->value);
+      listsOfPairs = listPairs(lv, clop, listsOfPairs);
     }
   }
   return listsOfPairs;
-  */
-  return 20;
 }
 
 size_t getEulerianCircuit(Graph *self, size_t heuristic){
@@ -320,28 +370,39 @@ void convertToPredecessorMatrix(Graph *g, Matrix *predecessors) {
 }
 
 void graphToEulerianGraph(Graph *self, size_t heuristic) {
-  // TODO: compute chinese circuit
   /*
    * 1 : Enumerate all the possible pairwise matching of the odd degree nodes
-   * 2 : Compute the shortest distance between any two nodes (eg. Floy_Warshall, maybe replace with Dijkstra Algorithm...)
+   * 2 : Compute the shortest distance between any two nodes
    * 3 : Compute the cost of each pairwise matching and retain the best one
    * 4 : Duplicate for each pair (x, y) of the best matching the edges that are on the shortest path for x to y
    * 5 : give the "new" graph back to compute the eulerian circuit
    *
   */
+
   // find all odd degree nodes :
-  bool oddDegreeNodes[self->nbMaxNodes];
+  List *oddDegreeNodes = NULL;
   for (size_t i = 0; i < self->nbMaxNodes; i++) {
-    oddDegreeNodes[i] = getNodeDegree(self->adjList[i]) % 2 == 1;
+    if (getNodeDegree(self->adjList[i]) % 2 == 1) {
+      addToList(&oddDegreeNodes, i);
+    }
   }
+
   //compute all shortest path
   Matrix *shortest = malloc(sizeof(Matrix));
   Matrix *predecessors = malloc(sizeof(Matrix));
   Floyd_Warshall(self, shortest, predecessors);
+
+  // get all costs of each pairwise matching for odd degree nodes
+  List *bestMatching;
+  size_t bestMWeight;
+  minLengthPairwise(oddDegreeNodes, bestMatching, &bestMWeight, shortest, predecessors);
+
   if (heuristic == 1) {
     // NOT FLOYD_WARSHALL!!!!
   }
-  free(shortest);
+
+  delete_matrix(shortest);
+  delete_matrix(predecessors);
 }
 
 void union_eulerelement(EulerianList *result, size_t element) {
@@ -453,4 +514,12 @@ void buildEulerianCircuit(Graph *graph, size_t heuristicNumber) {
   result.heuristicNumber = heuristicNumber;
   rebuildPathWeight(graph, &result);
   output_result(&result, stdout);
+}
+
+void deleteMatrix(Matrix *self){
+  for (size_t i = 0; i < self->maxNodes; i++) {
+    free(self->value[i]);
+  }
+  free(self->value);
+  free(self);
 }
