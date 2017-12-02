@@ -113,3 +113,12 @@ void printLList(LList *self) {
     self = self->next;
   }
 }
+
+void printList(List *self) {
+  printf("List :\n");
+  while (self != NULL) {
+    printf("%zu/", self->value);
+    self = self->next;
+  }
+  printf("\n");
+}

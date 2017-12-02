@@ -14,6 +14,7 @@ void graphToEulerianGraph(Graph *self, size_t heuristic);
 void union_eulerelement(EulerianList *result, size_t element);
 void union_eulerlist(EulerianList **dst, EulerianList *src);
 size_t size(EulerianList *list);
+size_t getPMWeight(List *pm, Matrix *weights);
 EulerianList* parse(Graph *graph, size_t x);
 void rebuildPathWeight(Graph *graph, EulerianPath *path);
 void buildEulerianPath(Graph *graph, size_t heuristicNumber);
@@ -131,33 +132,28 @@ size_t minLengthPairwise(List *V, List *bestMatching, size_t *bestMatchingWeight
   bestMatching = NULL;
   *bestMatchingWeight = INT_MAX;
 
-  LList *LPM = NULL;
-  LPM = listPairs(V, NULL, LPM);
+  LList *lpm = NULL;
+  lpm = listPairs(V, NULL, lpm);
 
-  printLList(LPM);
+  LList *tmplpm = lpm;
+  while(tmplpm != NULL) {
+    List *pm = tmplpm->list;
+    size_t pmWeight = getPMWeight(pm, weights);
+    if (pmWeight < *bestMatchingWeight) {
+      bestMatching = pm;
+      *bestMatchingWeight = pmWeight;
+    }
+    tmplpm = tmplpm->next;
+  }
+
+  printLList(lpm);
+  printList(bestMatching);
+  printf("Best matching weight : %zu\n", *bestMatchingWeight);
 
   return 20;
 }
 
 LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs){
-  /*
-  Input :
-    • V : the set of nodes to match by pairs (must have an even number of elements), ordered by node numbers
-    • currentListOfPairs: the current list of pairs under construction
-  Input-Output :
-    • listsOfPairs: The list (initially empty) of all the possible list of pairs
-
-  if V = ∅ then
-    listsOfPairs ← listsOfPairs+currentListOfPairs;
-  else
-    x ← min(V );
-    foreach y ∈ V such that x < y do
-      listPairs(V − {x, y}, currentListOfPairs+(x, y), listsOfPairs);
-    end foreach
-  end if
-  return listsOfPairs;
-  //*/
-
   if (V == NULL) {
     addListToLists(&listsOfPairs, currentListOfPairs);
   } else {
@@ -176,11 +172,6 @@ LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs){
 }
 
 size_t getEulerianCircuit(Graph *self, size_t heuristic){
-  /*FILE name;
-  size_t error=0;
-  error+=outputResultsToStream(self, &name);
-  error+=displayResults(self);
-  return error;*/
   size_t result = 10;
   isEulerian(self, &result);
   switch (result) {
@@ -441,6 +432,15 @@ size_t size(EulerianList *list) {
     list = list->next;
   }
   return count;
+}
+
+size_t getPMWeight(List *pm, Matrix *weights) {
+  size_t totalWeight = 0;
+  while (pm != NULL) {
+    totalWeight += weights->value[pm->value][pm->next->value];
+    pm = pm->next->next;
+  }
+  return totalWeight;
 }
 
 EulerianList* parse(Graph *graph, size_t x) {

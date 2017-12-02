@@ -29,4 +29,6 @@ void deleteFirstElement(List **self);
 
 void printLList(LList *self);
 
+void printList(List *self);
+
 #endif
