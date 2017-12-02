@@ -356,5 +356,5 @@ void readEulerianCircuit(Graph *graph) {
 void printHeuristicChoice() {
   printf("# Which heuristic do you want to use ?\n");
   printf("# 0 : Use successfully each heuristic.\n");
-  printf("# 1 : Floyd-Warshall algorithm.\n");
+  printf("# 1 : ???.\n");
 }

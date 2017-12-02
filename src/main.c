@@ -25,7 +25,7 @@ int main() {
 }
 //*/
 
-/*
+//*
 int main() {
   Graph graph = {0};
   startMenu(&graph);
@@ -33,7 +33,7 @@ int main() {
 }
 //*/
 
-//*
+/*
 int main() {
   Graph graph = {0};
   createExampleNonEulerian(&graph);
