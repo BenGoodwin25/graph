@@ -318,15 +318,6 @@ void convertToPredecessorMatrix(Graph *g, Matrix *predecessors) {
 }
 
 void graphToEulerianGraph(Graph *self, size_t heuristic) {
-  /*
-   * 1 : Enumerate all the possible pairwise matching of the odd degree nodes
-   * 2 : Compute the shortest distance between any two nodes
-   * 3 : Compute the cost of each pairwise matching and retain the best one
-   * 4 : Duplicate for each pair (x, y) of the best matching the edges that are on the shortest path for x to y
-   * 5 : give the "new" graph back to compute the eulerian circuit
-   *
-  */
-
   // find all odd degree nodes :
   List *oddDegreeNodes = NULL;
   for (size_t i = 0; i < self->nbMaxNodes; i++) {
@@ -502,7 +493,18 @@ void buildEulerianCircuit(Graph *graph, size_t heuristicNumber) {
   result.start = list;
   result.heuristicNumber = heuristicNumber;
   rebuildPathWeight(graph, &result);
+
+  // output result to stdout
   output_result(&result, stdout);
+  // output result to file
+  FILE *file = fopen("eulerianResults.txt", "w");
+  if(!file){
+    LOG_ERROR("Can't open or create the file eulerianResults.txt.\n");
+    LOG_INFO("Results weren't saved");
+    return;
+  }
+  output_result(&result, file);
+  fclose(file);
 }
 
 void deleteMatrix(Matrix *self){
