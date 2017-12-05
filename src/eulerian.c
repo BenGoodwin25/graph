@@ -51,19 +51,6 @@ size_t copyGraph(Graph *source, Graph *destination){
 }
 
 size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors){
-  /*
-  for each node z ∈ V {
-    for each node x ∈ V {
-      for each node y ∈ V {
-        if self(x, z) != +∞ and self(z, y) != +∞ and self(x, z) + self(z, y) < self(x, y) {
-          self(x, y) ← self(x, z) + self(z, y);
-          predecessors(x, y) ← predecessors(z, y);
-        }
-      }
-    }
-  }
-  */
-
   // Initialize our matricies
   create_matrix(weights, g->nbMaxNodes);
   create_matrix(predecessors, g->nbMaxNodes);
@@ -380,7 +367,11 @@ void duplicateEdgesFromPairwiseList(Graph *self, List *bestMatching, Matrix *pre
 
     while (end != start) {
       printf("End : %zu / Predecessor : %d\n", end, predecessors->value[start][end]);
-      add_edge(self, predecessors->value[start][end]+1, end+1, ++edgeName, self->adjList[predecessors->value[start][end]][end].weight, true);
+      Neighbour *n = self->adjList[predecessors->value[start][end]];
+      while (n->neighbour != end) {
+        n = n->nextNeighbour;
+      }
+      add_edge(self, predecessors->value[start][end]+1, end+1, ++edgeName, n->weight, true);
       end = predecessors->value[start][end];
     }
 
