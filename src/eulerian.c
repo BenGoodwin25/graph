@@ -344,11 +344,7 @@ void graphToEulerianGraph(Graph *self, size_t heuristic) {
   List *bestMatching;
   size_t bestMWeight;
   minLengthPairwise(oddDegreeNodes, &bestMatching, &bestMWeight, shortest);
-  printList(bestMatching);
-  printf("%zu\n", bestMWeight);
   duplicateEdgesFromPairwiseList(self, bestMatching, predecessors);
-
-  view_graph(self);
 
   if (heuristic == 1) {
     // NOT FLOYD_WARSHALL!!!!
@@ -362,11 +358,9 @@ void duplicateEdgesFromPairwiseList(Graph *self, List *bestMatching, Matrix *pre
   while (bestMatching != NULL) {
     size_t start = bestMatching->value;
     size_t end = bestMatching->next->value;
-    printf("Start : %zu / End : %zu\n", start, end);
     int edgeName = getMaxEdgeName(self);
 
     while (end != start) {
-      printf("End : %zu / Predecessor : %d\n", end, predecessors->value[start][end]);
       Neighbour *n = self->adjList[predecessors->value[start][end]];
       while (n->neighbour != end) {
         n = n->nextNeighbour;

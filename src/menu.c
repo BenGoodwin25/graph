@@ -110,7 +110,6 @@ int readUserInput(char *dest, int length){
 }
 
 void printExampleGraphList() {
-  printf("# 0 : Default graph.\n");
   printf("# 1 : Non eulerian graph.\n");
   printf("# 2 : Half eulerian graph.\n");
   printf("# 3 : Eulerian graph.\n");
@@ -129,9 +128,6 @@ void readCreateExampleGraph(Graph *graph) {
       return;
     }
     switch (choice) {
-      case 0:
-        createExampleGraph(graph);
-        break;
       case 1:
         createExampleNonEulerian(graph);
         break;
@@ -316,25 +312,6 @@ void readDeleteEdge(Graph *graph){
   } else {
     printf("# Graph wasn't modified\n");
   }
-}
-
-void createExampleGraph(Graph *graph){
-  create_graph(graph, 11, false);
-  add_node(graph, 1);
-  add_node(graph, 2);
-  add_node(graph, 3);
-  add_node(graph, 4);
-  add_node(graph, 5);
-  add_node(graph, 6);
-  add_node(graph, 7);
-  add_node(graph, 8);
-  add_edge(graph, 1, 7, 1, 2, true);
-  add_edge(graph, 1, 3, 2, 1, true);
-  add_edge(graph, 1, 4, 5, 5, true);
-  add_edge(graph, 2, 5, 4, 3, true);
-  add_edge(graph, 2, 7, 8, 9, true);
-  add_edge(graph, 4, 7, 3, 4, true);
-  printf("# Example graph created!\n");
 }
 
 void readEulerianCircuit(Graph *graph) {
