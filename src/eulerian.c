@@ -87,7 +87,7 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors){
   return 0;
 }
 
-size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeight, Matrix *weights){
+size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeight, Matrix *weights, size_t heuristic){
   *bestMatching = NULL;
   *bestMatchingWeight = INT_MAX;
 
@@ -149,12 +149,23 @@ size_t getEulerianCircuit(Graph *self, size_t heuristic){
     default:
       break;
   }
-  if (result == GRAPH_HALF_EULERIAN) {
-    buildEulerianPath(self, heuristic);
+  unlink("eulerianResults.txt");
+  if (heuristic == HEURISTIC_ALL) {
+    for (size_t i = 1; i < 2; i++) {
+      if (result == GRAPH_HALF_EULERIAN) {
+        buildEulerianPath(self, i);
+      } else {
+        buildEulerianCircuit(self, i);
+      }
+    }
   } else {
-    buildEulerianCircuit(self, heuristic);
+    if (result == GRAPH_HALF_EULERIAN) {
+      buildEulerianPath(self, heuristic);
+    } else {
+      buildEulerianCircuit(self, heuristic);
+    }
   }
-  return 20;
+  return 0;
 }
 
 size_t isEulerian(Graph *self, size_t *eulerianResult) {
@@ -338,12 +349,8 @@ void graphToEulerianGraph(Graph *self, size_t heuristic) {
   // get all costs of each pairwise matching for odd degree nodes
   List *bestMatching;
   size_t bestMWeight;
-  minLengthPairwise(oddDegreeNodes, &bestMatching, &bestMWeight, shortest);
+  minLengthPairwise(oddDegreeNodes, &bestMatching, &bestMWeight, shortest, heuristic);
   duplicateEdgesFromPairwiseList(self, bestMatching, predecessors);
-
-  if (heuristic == 1) {
-    // NOT FLOYD_WARSHALL!!!!
-  }
 
   delete_matrix(shortest);
   delete_matrix(predecessors);
@@ -481,7 +488,17 @@ void buildEulerianPath(Graph *graph, size_t heuristicNumber) {
   result.start = list;
   result.heuristicNumber = heuristicNumber;
   rebuildPathWeight(graph, &result);
+  // output result to stdout
   output_result(&result, stdout);
+  // output result to file
+  FILE *file = fopen("eulerianResults.txt", "a");
+  if(!file){
+    LOG_ERROR("Can't open or create the file eulerianResults.txt.\n");
+    LOG_INFO("Results weren't saved");
+    return;
+  }
+  output_result(&result, file);
+  fclose(file);
 }
 
 void buildEulerianCircuit(Graph *graph, size_t heuristicNumber) {
@@ -501,7 +518,7 @@ void buildEulerianCircuit(Graph *graph, size_t heuristicNumber) {
   // output result to stdout
   output_result(&result, stdout);
   // output result to file
-  FILE *file = fopen("eulerianResults.txt", "w");
+  FILE *file = fopen("eulerianResults.txt", "a");
   if(!file){
     LOG_ERROR("Can't open or create the file eulerianResults.txt.\n");
     LOG_INFO("Results weren't saved");

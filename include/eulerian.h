@@ -2,6 +2,7 @@
 #define GRAPH_H
 
 #include <stdio.h>
+#include <unistd.h>
 
 #include <eulerianlist.h>
 #include <eulerianpath.h>
@@ -11,6 +12,9 @@
 #define GRAPH_EULERIAN 0
 #define GRAPH_HALF_EULERIAN 1
 #define GRAPH_NON_EULERIAN 2
+
+#define HEURISTIC_ALL 0
+#define HEURISTIC_REJECT_MAX 1
 
 /*
  * Function : duplicate a graph to do efficient work on it
@@ -54,7 +58,7 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors);
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeight, Matrix *weights);
+size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeight, Matrix *weights, size_t heuristic);
 
 /*
  * Function :
