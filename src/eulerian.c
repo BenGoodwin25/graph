@@ -116,11 +116,13 @@ LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t
     List *x = V;
     if (heuristic ==  HEURISTIC_RANDOM) {
       size_t vSize = getListSize(V);
-      double random = (double)rand() / (double)RAND_MAX;
-      size_t pairWithElement = (size_t)(random * vSize);
-      List *y = x;
-      for(size_t cpt = 1; cpt <= pairWithElement; cpt++) {
-        y = y->next;
+      List *y = x->next;
+      if (vSize > 2) {
+        double random = (double)rand() / (double)RAND_MAX;
+        size_t pairWithElement = (size_t)(random * vSize);
+        for(size_t cpt = 1; cpt < pairWithElement; cpt++) {
+          y = y->next;
+        }
       }
       List *lv = NULL;
       cloneList(V, &lv);
