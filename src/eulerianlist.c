@@ -111,6 +111,15 @@ bool isInList(List *self, size_t element) {
   return false;
 }
 
+size_t getListSize(List *self) {
+  size_t cpt = 0;
+  while (self != NULL) {
+    cpt++;
+    self = self->next;
+  }
+  return cpt;
+}
+
 void printLList(LList *self) {
   printf("LList :\n");
   while (self != NULL) {

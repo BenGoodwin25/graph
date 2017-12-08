@@ -30,6 +30,8 @@ void deleteFirstElement(List **self);
 
 bool isInList(List *self, size_t element);
 
+size_t getListSize(List *self);
+
 void printLList(LList *self);
 
 void printList(List *self);

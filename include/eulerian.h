@@ -14,7 +14,7 @@
 #define GRAPH_NON_EULERIAN 2
 
 #define HEURISTIC_ALL 0
-#define HEURISTIC_REJECT_MAX 1
+#define HEURISTIC_RANDOM 1
 
 /*
  * Function : duplicate a graph to do efficient work on it
@@ -73,7 +73,7 @@ size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeigh
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-LList *listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs);
+LList *listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t heuristic);
 
 /*
  * Function : get Eulerian circuit, display it and write it on a file

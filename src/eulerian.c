@@ -1,6 +1,8 @@
 #include <eulerian.h>
 #include <stdio.h>
 #include <limits.h>
+#include <time.h>
+#include <stdlib.h>
 
 /*****************************************/
 /** INTERNAL FILE FUNCTIONS DECLARATION **/
@@ -91,7 +93,8 @@ size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeigh
   *bestMatchingWeight = INT_MAX;
 
   LList *lpm = NULL;
-  lpm = listPairs(V, NULL, lpm);
+  srand(time(NULL));
+  lpm = listPairs(V, NULL, lpm, heuristic);
 
   LList *tmplpm = lpm;
   while(tmplpm != NULL) {
@@ -113,19 +116,36 @@ size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeigh
   return 0;
 }
 
-LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs){
+LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t heuristic){
   if (V == NULL) {
     addListToLists(&listsOfPairs, currentListOfPairs);
   } else {
     List *x = V;
-    for (List *y = x->next; y != NULL && x->value < y->value; y = y->next) {
+    if (heuristic ==  HEURISTIC_RANDOM) {
+      size_t vSize = getListSize(V);
+      double random = (double)rand() / (double)RAND_MAX;
+      size_t pairWithElement = (size_t)(random * vSize);
+      List *y = x;
+      for(size_t cpt = 0; cpt <= pairWithElement; cpt++) {
+        y = y->next;
+      }
       List *lv = NULL;
       cloneList(V, &lv);
       deletePair(&lv, x->value, y->value);
       List *clop = NULL;
       cloneList(currentListOfPairs, &clop);
       addPair(&clop, x->value, y->value);
-      listsOfPairs = listPairs(lv, clop, listsOfPairs);
+      listsOfPairs = listPairs(lv, clop, listsOfPairs, heuristic);
+    } else {
+      for (List *y = x->next; y != NULL && x->value < y->value; y = y->next) {
+        List *lv = NULL;
+        cloneList(V, &lv);
+        deletePair(&lv, x->value, y->value);
+        List *clop = NULL;
+        cloneList(currentListOfPairs, &clop);
+        addPair(&clop, x->value, y->value);
+        listsOfPairs = listPairs(lv, clop, listsOfPairs, heuristic);
+      }
     }
   }
   return listsOfPairs;
@@ -134,6 +154,7 @@ LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs){
 size_t getEulerianCircuit(Graph *self, size_t heuristic){
   size_t result = 10;
   isEulerian(self, &result);
+  printf("\n");
   switch (result) {
     case GRAPH_EULERIAN:
       printf("# The graph is eulerian.\n");
@@ -143,18 +164,29 @@ size_t getEulerianCircuit(Graph *self, size_t heuristic){
       break;
     case GRAPH_NON_EULERIAN:
       printf("# The graph isn't eulerian.\n");
-      graphToEulerianGraph(self, heuristic);
       break;
     default:
       break;
   }
   unlink("eulerianResults.txt");
   if (heuristic == HEURISTIC_ALL) {
-    for (size_t i = 1; i < 2; i++) {
-      buildEulerianWay(self, i, result == GRAPH_HALF_EULERIAN);
+    for (size_t i = 1; i < 3; i++) {
+      Graph copy = {0};
+      copyGraph(self, &copy);
+      if (result == GRAPH_NON_EULERIAN) {
+        graphToEulerianGraph(&copy, i);
+      }
+      buildEulerianWay(&copy, i, result == GRAPH_HALF_EULERIAN);
+      delete_graph(&copy);
     }
   } else {
-    buildEulerianWay(self, heuristic, result == GRAPH_HALF_EULERIAN);
+    Graph copy = {0};
+    copyGraph(self, &copy);
+    if (result == GRAPH_NON_EULERIAN) {
+      graphToEulerianGraph(&copy, heuristic);
+    }
+    buildEulerianWay(&copy, heuristic, result == GRAPH_HALF_EULERIAN);
+    delete_graph(&copy);
   }
   return 0;
 }
@@ -178,40 +210,37 @@ size_t isEulerian(Graph *self, size_t *eulerianResult) {
 }
 
 void createExampleNonEulerian(Graph *self) {
-  create_graph(self, 5, false);
+  create_graph(self, 12, false);
   add_node(self, 1);
   add_node(self, 2);
   add_node(self, 3);
   add_node(self, 4);
   add_node(self, 5);
-  /*
-    add_node(self, 6);
-    add_node(self, 7);
-    add_node(self, 8);
-    add_node(self, 9);
-    add_node(self, 10);
-    add_node(self, 11);
-    add_node(self, 12);
-  */
+  add_node(self, 6);
+  add_node(self, 7);
+  add_node(self, 8);
+  add_node(self, 9);
+  add_node(self, 10);
+  add_node(self, 11);
+  add_node(self, 12);
   add_edge(self, 1, 2, 0, 1, false);
   add_edge(self, 1, 3, 1, 1, false);
   add_edge(self, 2, 3, 2, 5, false);
   add_edge(self, 2, 4, 3, 2, false);
   add_edge(self, 3, 4, 4, 1, false);
   add_edge(self, 4, 5, 5, 2, false);
-  /*
-    add_edge(self, 5, 6, 6, 2, false);
-    add_edge(self, 5, 7, 7, 3, false);
-    add_edge(self, 6, 7, 8, 15, false);
-    add_edge(self, 6, 8, 9, 1, false);
-    add_edge(self, 7, 8, 10, 3, false);
-    add_edge(self, 8, 9, 11, 1, false);
-    add_edge(self, 9, 10, 12, 1, false);
-    add_edge(self, 9, 11, 13, 5, false);
-    add_edge(self, 10, 11, 14, 50, false);
-    add_edge(self, 10, 12, 15, 2, false);
-    add_edge(self, 11, 12, 16, 3, false);
-  */
+  add_edge(self, 5, 6, 6, 2, false);
+  add_edge(self, 5, 7, 7, 3, false);
+  add_edge(self, 6, 7, 8, 15, false);
+  add_edge(self, 6, 8, 9, 1, false);
+  add_edge(self, 7, 8, 10, 3, false);
+  add_edge(self, 8, 9, 11, 1, false);
+  add_edge(self, 9, 10, 12, 1, false);
+  add_edge(self, 9, 11, 13, 5, false);
+  add_edge(self, 10, 11, 14, 50, false);
+  add_edge(self, 10, 12, 15, 2, false);
+  add_edge(self, 11, 12, 16, 3, false);
+
   printf("# Example non eulerian graph created!\n");
 }
 
