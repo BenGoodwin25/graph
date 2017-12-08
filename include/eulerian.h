@@ -15,6 +15,7 @@
 
 #define HEURISTIC_ALL 0
 #define HEURISTIC_RANDOM 1
+#define HEURISTIC_NONE 2
 
 /*
  * Function : duplicate a graph to do efficient work on it
@@ -87,7 +88,7 @@ LList *listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t 
  *  error code 1 : create couldn't be executed
  *  error code 20 : function not yet implemented
  */
-size_t getEulerianCircuit(Graph *self, size_t heuristic);
+size_t getEulerianCircuit(Graph *self, size_t heuristic, size_t eulerianState);
 
 /*
  * Function : check if a graph is eulerian or not

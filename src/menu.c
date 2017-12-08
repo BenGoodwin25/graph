@@ -318,20 +318,37 @@ void readEulerianCircuit(Graph *graph) {
   char heuristicInput[MAX_DIGIT_LENGTH];
   int heuristic = -1;
   int error = -1;
-  while(error != 0) {
-    printHeuristicChoice();
-    error = readUserInput(heuristicInput, MAX_DIGIT_LENGTH+1);
+  size_t result = 10;
+  isEulerian(graph, &result);
+  switch (result) {
+    case GRAPH_EULERIAN:
+      printf("# The graph is eulerian.\n");
+      break;
+    case GRAPH_HALF_EULERIAN:
+      printf("# The graph is half eulerian.\n");
+      break;
+    case GRAPH_NON_EULERIAN: {
+        printf("# The graph isn't eulerian.\n");
+        while(error != 0) {
+          printHeuristicChoice();
+          error = readUserInput(heuristicInput, MAX_DIGIT_LENGTH+1);
+        }
+        if(sscanf(heuristicInput, "%d", &heuristic) != 1){
+          LOG_ERROR_INT_CONVERT();
+          printf("# Can't determine which heuristic to use.\n");
+          return;
+        }
+      }
+      break;
+    default:
+      break;
   }
-  if(sscanf(heuristicInput, "%d", &heuristic) != 1){
-    LOG_ERROR_INT_CONVERT();
-    printf("# Can't determine which heuristic to use.\n");
-    return;
-  }
-  getEulerianCircuit(graph, heuristic);
+  getEulerianCircuit(graph, heuristic, result);
 }
 
 void printHeuristicChoice() {
   printf("# Which heuristic do you want to use ?\n");
-  printf("# 0 : Use successfully each heuristic.\n");
-  printf("# 1 : ???.\n");
+  printf("# %d : Use successfully each heuristic.\n", HEURISTIC_ALL);
+  printf("# %d : Random pick heuristic.\n", HEURISTIC_RANDOM);
+  printf("# %d : No heuristic.\n", HEURISTIC_NONE);
 }

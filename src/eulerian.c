@@ -106,13 +106,6 @@ size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeigh
     }
     tmplpm = tmplpm->next;
   }
-
-  /*
-  printLList(lpm);
-  printList(*bestMatching);
-  printf("Best matching weight : %zu\n", *bestMatchingWeight);
-  //*/
-
   return 0;
 }
 
@@ -126,7 +119,7 @@ LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t
       double random = (double)rand() / (double)RAND_MAX;
       size_t pairWithElement = (size_t)(random * vSize);
       List *y = x;
-      for(size_t cpt = 0; cpt <= pairWithElement; cpt++) {
+      for(size_t cpt = 1; cpt <= pairWithElement; cpt++) {
         y = y->next;
       }
       List *lv = NULL;
@@ -151,43 +144,28 @@ LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t
   return listsOfPairs;
 }
 
-size_t getEulerianCircuit(Graph *self, size_t heuristic){
-  size_t result = 10;
-  isEulerian(self, &result);
-  printf("\n");
-  switch (result) {
-    case GRAPH_EULERIAN:
-      printf("# The graph is eulerian.\n");
-      break;
-    case GRAPH_HALF_EULERIAN:
-      printf("# The graph is half eulerian.\n");
-      break;
-    case GRAPH_NON_EULERIAN:
-      printf("# The graph isn't eulerian.\n");
-      break;
-    default:
-      break;
-  }
+size_t getEulerianCircuit(Graph *self, size_t heuristic, size_t eulerianState){
   unlink("eulerianResults.txt");
   if (heuristic == HEURISTIC_ALL) {
     for (size_t i = 1; i < 3; i++) {
       Graph copy = {0};
       copyGraph(self, &copy);
-      if (result == GRAPH_NON_EULERIAN) {
+      if (eulerianState == GRAPH_NON_EULERIAN) {
         graphToEulerianGraph(&copy, i);
       }
-      buildEulerianWay(&copy, i, result == GRAPH_HALF_EULERIAN);
+      buildEulerianWay(&copy, i, eulerianState == GRAPH_HALF_EULERIAN);
       delete_graph(&copy);
     }
   } else {
     Graph copy = {0};
     copyGraph(self, &copy);
-    if (result == GRAPH_NON_EULERIAN) {
+    if (eulerianState == GRAPH_NON_EULERIAN) {
       graphToEulerianGraph(&copy, heuristic);
     }
-    buildEulerianWay(&copy, heuristic, result == GRAPH_HALF_EULERIAN);
+    buildEulerianWay(&copy, heuristic, eulerianState == GRAPH_HALF_EULERIAN);
     delete_graph(&copy);
   }
+  printf("# Eulerian result(s) saved in file named 'eulerianResults.txt'\n");
   return 0;
 }
 
