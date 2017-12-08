@@ -350,5 +350,5 @@ void printHeuristicChoice() {
   printf("# Which heuristic do you want to use ?\n");
   printf("# %d : Use successfully each heuristic.\n", HEURISTIC_ALL);
   printf("# %d : Random pick heuristic.\n", HEURISTIC_RANDOM);
-  printf("# %d : No heuristic.\n", HEURISTIC_NONE);
+  printf("# %d : No heuristic (Warning : it can take a lot of time).\n", HEURISTIC_NONE);
 }

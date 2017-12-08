@@ -149,7 +149,7 @@ LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t
 size_t getEulerianCircuit(Graph *self, size_t heuristic, size_t eulerianState){
   unlink("eulerianResults.txt");
   if (heuristic == HEURISTIC_ALL) {
-    for (size_t i = 1; i < 3; i++) {
+    for (size_t i = 1; i < HEURISTIC_NONE; i++) {
       Graph copy = {0};
       copyGraph(self, &copy);
       if (eulerianState == GRAPH_NON_EULERIAN) {
