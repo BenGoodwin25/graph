@@ -19,8 +19,7 @@ size_t getPMWeight(List *pm, Matrix *weights);
 int getMaxEdgeName(Graph *self);
 EulerianList* parse(Graph *graph, size_t x);
 void rebuildPathWeight(Graph *graph, EulerianPath *path);
-void buildEulerianPath(Graph *graph, size_t heuristicNumber);
-void buildEulerianCircuit(Graph *graph, size_t heuristicNumber);
+void buildEulerianWay(Graph *graph, size_t heuristicNumber, bool isHalfEulerian);
 void deleteMatrix(Matrix *self);
 
 /**********************/
@@ -152,18 +151,10 @@ size_t getEulerianCircuit(Graph *self, size_t heuristic){
   unlink("eulerianResults.txt");
   if (heuristic == HEURISTIC_ALL) {
     for (size_t i = 1; i < 2; i++) {
-      if (result == GRAPH_HALF_EULERIAN) {
-        buildEulerianPath(self, i);
-      } else {
-        buildEulerianCircuit(self, i);
-      }
+      buildEulerianWay(self, i, result == GRAPH_HALF_EULERIAN);
     }
   } else {
-    if (result == GRAPH_HALF_EULERIAN) {
-      buildEulerianPath(self, heuristic);
-    } else {
-      buildEulerianCircuit(self, heuristic);
-    }
+    buildEulerianWay(self, heuristic, result == GRAPH_HALF_EULERIAN);
   }
   return 0;
 }
@@ -469,17 +460,20 @@ void rebuildPathWeight(Graph *graph, EulerianPath *path) {
   path->totalWeight = totalWeight;
 }
 
-void buildEulerianPath(Graph *graph, size_t heuristicNumber) {
+void buildEulerianWay(Graph *graph, size_t heuristicNumber, bool isHalfEulerian) {
   Graph copy = {0};
   EulerianPath result = {0};
   EulerianList *list = NULL;
   copyGraph(graph, &copy);
-  // find the first odd degree node
-  size_t oddNode = 0;
-  while (getNodeDegree(graph->adjList[oddNode]) % 2 == 0) {
-    oddNode++;
+  // if the graph is half eulerian, then start the path from an odd degree node
+  if (isHalfEulerian) {
+    // find the first odd degree node
+    size_t oddNode = 0;
+    while (getNodeDegree(graph->adjList[oddNode]) % 2 == 0) {
+      oddNode++;
+    }
+    union_eulerlist(&list, parse(&copy, oddNode));
   }
-  union_eulerlist(&list, parse(&copy, oddNode));
   for (size_t i = 0; i < copy.nbMaxNodes; i++) {
     if (copy.adjList[i]->neighbour != -1) {
       union_eulerlist(&list, parse(&copy, i));
@@ -488,33 +482,6 @@ void buildEulerianPath(Graph *graph, size_t heuristicNumber) {
   result.start = list;
   result.heuristicNumber = heuristicNumber;
   rebuildPathWeight(graph, &result);
-  // output result to stdout
-  output_result(&result, stdout);
-  // output result to file
-  FILE *file = fopen("eulerianResults.txt", "a");
-  if(!file){
-    LOG_ERROR("Can't open or create the file eulerianResults.txt.\n");
-    LOG_INFO("Results weren't saved");
-    return;
-  }
-  output_result(&result, file);
-  fclose(file);
-}
-
-void buildEulerianCircuit(Graph *graph, size_t heuristicNumber) {
-  Graph copy = {0};
-  EulerianPath result = {0};
-  EulerianList *list = NULL;
-  copyGraph(graph, &copy);
-  for (size_t i = 0; i < copy.nbMaxNodes; i++) {
-    if (copy.adjList[i]->neighbour != -1) {
-      union_eulerlist(&list, parse(&copy, i));
-    }
-  }
-  result.start = list;
-  result.heuristicNumber = heuristicNumber;
-  rebuildPathWeight(graph, &result);
-
   // output result to stdout
   output_result(&result, stdout);
   // output result to file
