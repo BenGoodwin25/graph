@@ -37,11 +37,15 @@ size_t copyGraph(Graph *source, Graph *destination){
     }
   }
 
+  List *edgesDone = NULL;
   for (size_t i = 0; i < source->nbMaxNodes; i++) {
     if (is_node_exists(source, i)) {
       Neighbour *tmp = source->adjList[i];
       while (tmp->neighbour != -1) {
-        add_edge(destination, i+1, tmp->neighbour+1, tmp->edgeName, tmp->weight, true);
+        if (!isInList(edgesDone, tmp->edgeName)) {
+          add_edge(destination, i+1, tmp->neighbour+1, tmp->edgeName, tmp->weight, true);
+          addToList(&edgesDone, tmp->edgeName);
+        }
         tmp = tmp->nextNeighbour;
       }
     }

@@ -1,6 +1,7 @@
 #ifndef GRAPH_LIST_H
 #define GRAPH_LIST_H
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -26,6 +27,8 @@ void addPair(List **dst, size_t x, size_t y);
 void deletePair(List **dst, size_t x, size_t y);
 
 void deleteFirstElement(List **self);
+
+bool isInList(List *self, size_t element);
 
 void printLList(LList *self);
 

@@ -101,6 +101,16 @@ void deleteFirstElement(List **self) {
   free(tmp);
 }
 
+bool isInList(List *self, size_t element) {
+  while(self != NULL) {
+    if (self->value == element) {
+      return true;
+    }
+    self = self->next;
+  }
+  return false;
+}
+
 void printLList(LList *self) {
   printf("LList :\n");
   while (self != NULL) {
