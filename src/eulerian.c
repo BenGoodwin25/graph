@@ -190,7 +190,7 @@ size_t isEulerian(Graph *self, size_t *eulerianResult) {
 }
 
 void createExampleNonEulerian(Graph *self) {
-  create_graph(self, 12, false);
+  create_graph(self, 24, false);
   add_node(self, 1);
   add_node(self, 2);
   add_node(self, 3);
@@ -203,6 +203,20 @@ void createExampleNonEulerian(Graph *self) {
   add_node(self, 10);
   add_node(self, 11);
   add_node(self, 12);
+/*
+  add_node(self, 13);
+  add_node(self, 14);
+  add_node(self, 15);
+  add_node(self, 16);
+  add_node(self, 17);
+  add_node(self, 18);
+  add_node(self, 19);
+  add_node(self, 20);
+  add_node(self, 21);
+  add_node(self, 22);
+  add_node(self, 23);
+  add_node(self, 24);
+*/
   add_edge(self, 1, 2, 0, 1, false);
   add_edge(self, 1, 3, 1, 1, false);
   add_edge(self, 2, 3, 2, 5, false);
@@ -220,6 +234,28 @@ void createExampleNonEulerian(Graph *self) {
   add_edge(self, 10, 11, 14, 50, false);
   add_edge(self, 10, 12, 15, 2, false);
   add_edge(self, 11, 12, 16, 3, false);
+
+  /*
+  add_edge(self, 12, 13, 42, 1, false);
+
+  add_edge(self, 12+1, 12+2, 17+0, 1, false);
+  add_edge(self, 12+1, 12+3, 17+1, 1, false);
+  add_edge(self, 12+2, 12+3, 17+2, 5, false);
+  add_edge(self, 12+2, 12+4, 17+3, 2, false);
+  add_edge(self, 12+3, 12+4, 17+4, 1, false);
+  add_edge(self, 12+4, 12+5, 17+5, 2, false);
+  add_edge(self, 12+5, 12+6, 17+6, 2, false);
+  add_edge(self, 12+5, 12+7, 17+7, 3, false);
+  add_edge(self, 12+6, 12+7, 17+8, 15, false);
+  add_edge(self, 12+6, 12+8, 17+9, 1, false);
+  add_edge(self, 12+7, 12+8, 17+10, 3, false);
+  add_edge(self, 12+8, 12+9, 17+11, 1, false);
+  add_edge(self, 12+9, 12+10, 17+12, 1, false);
+  add_edge(self, 12+9, 12+11, 17+13, 5, false);
+  add_edge(self, 12+10, 12+11, 17+14, 50, false);
+  add_edge(self, 12+10, 12+12, 17+15, 2, false);
+  add_edge(self, 12+11, 12+12, 17+16, 3, false);
+   */
 
   printf("# Example non eulerian graph created!\n");
 }
