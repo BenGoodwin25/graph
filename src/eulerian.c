@@ -160,7 +160,7 @@ LList * listPairsExcludeMax(List *V, List *currentListOfPairs, LList *listsOfPai
     List *clop = NULL;
     cloneList(currentListOfPairs, &clop);
     addPair(&clop, x->value, lMin->value);
-    listsOfPairs = listPairsNoHeuristic(lv, clop, listsOfPairs);
+    listsOfPairs = listPairsExcludeMax(lv, clop, listsOfPairs, weights);
   }
   return listsOfPairs;
 }
@@ -227,6 +227,76 @@ size_t isEulerian(Graph *self, size_t *eulerianResult) {
 }
 
 void createExampleNonEulerian(Graph *self) {
+  create_graph(self, 24, false);
+  add_node(self, 1);
+  add_node(self, 2);
+  add_node(self, 3);
+  add_node(self, 4);
+  add_node(self, 5);
+  add_node(self, 6);
+  add_node(self, 7);
+  add_node(self, 8);
+  add_node(self, 9);
+  add_node(self, 10);
+  add_node(self, 11);
+  add_node(self, 12);
+
+  add_node(self, 13);
+  add_node(self, 14);
+  add_node(self, 15);
+  add_node(self, 16);
+  add_node(self, 17);
+  add_node(self, 18);
+  add_node(self, 19);
+  add_node(self, 20);
+  add_node(self, 21);
+  add_node(self, 22);
+  add_node(self, 23);
+  add_node(self, 24);
+
+  add_edge(self, 1, 2, 0, 1, false);
+  add_edge(self, 1, 3, 1, 1, false);
+  add_edge(self, 2, 3, 2, 5, false);
+  add_edge(self, 2, 4, 3, 2, false);
+  add_edge(self, 3, 4, 4, 1, false);
+  add_edge(self, 4, 5, 5, 2, false);
+  add_edge(self, 5, 6, 6, 2, false);
+  add_edge(self, 5, 7, 7, 3, false);
+  add_edge(self, 6, 7, 8, 15, false);
+  add_edge(self, 6, 8, 9, 1, false);
+  add_edge(self, 7, 8, 10, 3, false);
+  add_edge(self, 8, 9, 11, 1, false);
+  add_edge(self, 9, 10, 12, 1, false);
+  add_edge(self, 9, 11, 13, 5, false);
+  add_edge(self, 10, 11, 14, 50, false);
+  add_edge(self, 10, 12, 15, 2, false);
+  add_edge(self, 11, 12, 16, 3, false);
+
+
+  add_edge(self, 12, 13, 42, 1, false);
+
+  add_edge(self, 12+1, 12+2, 17+0, 1, false);
+  add_edge(self, 12+1, 12+3, 17+1, 1, false);
+  add_edge(self, 12+2, 12+3, 17+2, 5, false);
+  add_edge(self, 12+2, 12+4, 17+3, 2, false);
+  add_edge(self, 12+3, 12+4, 17+4, 1, false);
+  add_edge(self, 12+4, 12+5, 17+5, 2, false);
+  add_edge(self, 12+5, 12+6, 17+6, 2, false);
+  add_edge(self, 12+5, 12+7, 17+7, 3, false);
+  add_edge(self, 12+6, 12+7, 17+8, 15, false);
+  add_edge(self, 12+6, 12+8, 17+9, 1, false);
+  add_edge(self, 12+7, 12+8, 17+10, 3, false);
+  add_edge(self, 12+8, 12+9, 17+11, 1, false);
+  add_edge(self, 12+9, 12+10, 17+12, 1, false);
+  add_edge(self, 12+9, 12+11, 17+13, 5, false);
+  add_edge(self, 12+10, 12+11, 17+14, 50, false);
+  add_edge(self, 12+10, 12+12, 17+15, 2, false);
+  add_edge(self, 12+11, 12+12, 17+16, 3, false);
+
+  printf("# Example non eulerian graph created!\n");
+}
+
+void createExampleDoubleNonEulerian(Graph *self) {
   create_graph(self, 24, false);
   add_node(self, 1);
   add_node(self, 2);
