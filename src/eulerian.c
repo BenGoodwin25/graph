@@ -77,14 +77,6 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors){
     }
   }
 
-  // Just a debug print
-  /*
-  printf("Weights :\n");
-  print_matrix(weights);
-  printf("Predecessors :\n");
-  print_matrix(predecessors);
-  //*/
-
   return 0;
 }
 
@@ -150,6 +142,26 @@ LList * listPairsMultipleRandom(List *V, List *currentListOfPairs, LList *listsO
 }
 
 LList * listPairsExcludeMax(List *V, List *currentListOfPairs, LList *listsOfPairs, Matrix *weights){
+  if (V == NULL) {
+    addListToLists(&listsOfPairs, currentListOfPairs);
+  } else {
+    List *x = V;
+    List *lMin = NULL;
+    ssize_t minWeight = INT_MAX;
+    for (List *y = x->next; y != NULL && x->value < y->value; y = y->next) {
+      if (weights->value[x->value][y->value] < minWeight) {
+        lMin = y;
+        minWeight = weights->value[x->value][y->value];
+      }
+    }
+    List *lv = NULL;
+    cloneList(V, &lv);
+    deletePair(&lv, x->value, lMin->value);
+    List *clop = NULL;
+    cloneList(currentListOfPairs, &clop);
+    addPair(&clop, x->value, lMin->value);
+    listsOfPairs = listPairsNoHeuristic(lv, clop, listsOfPairs);
+  }
   return listsOfPairs;
 }
 
