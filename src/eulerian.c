@@ -228,7 +228,7 @@ void createExampleNonEulerian(Graph *self) {
   add_node(self, 10);
   add_node(self, 11);
   add_node(self, 12);
-/*
+
   add_node(self, 13);
   add_node(self, 14);
   add_node(self, 15);
@@ -241,7 +241,7 @@ void createExampleNonEulerian(Graph *self) {
   add_node(self, 22);
   add_node(self, 23);
   add_node(self, 24);
-*/
+
   add_edge(self, 1, 2, 0, 1, false);
   add_edge(self, 1, 3, 1, 1, false);
   add_edge(self, 2, 3, 2, 5, false);
@@ -260,7 +260,7 @@ void createExampleNonEulerian(Graph *self) {
   add_edge(self, 10, 12, 15, 2, false);
   add_edge(self, 11, 12, 16, 3, false);
 
-  /*
+
   add_edge(self, 12, 13, 42, 1, false);
 
   add_edge(self, 12+1, 12+2, 17+0, 1, false);
@@ -280,7 +280,6 @@ void createExampleNonEulerian(Graph *self) {
   add_edge(self, 12+10, 12+11, 17+14, 50, false);
   add_edge(self, 12+10, 12+12, 17+15, 2, false);
   add_edge(self, 12+11, 12+12, 17+16, 3, false);
-   */
 
   printf("# Example non eulerian graph created!\n");
 }
