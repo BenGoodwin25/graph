@@ -77,6 +77,10 @@ int readInputMainMenu(Graph *graph){
         return 1;
         break;
       case COMPUTE_EULERIAN_CIRCUIT:
+        if (graph->nbMaxNodes == 0) {
+          printf("# Please, create a connected graph.\n");
+          return 0;
+        }
         readEulerianCircuit(graph);
         break;
       default:
@@ -113,6 +117,7 @@ void printExampleGraphList() {
   printf("# 1 : Non eulerian graph.\n");
   printf("# 2 : Half eulerian graph.\n");
   printf("# 3 : Eulerian graph.\n");
+  printf("# 4 : Big non eulerian graph.\n");
 }
 
 void readCreateExampleGraph(Graph *graph) {
@@ -123,7 +128,7 @@ void readCreateExampleGraph(Graph *graph) {
   printExampleGraphList();
   while(readUserInput(choiceInput, MAX_DIGIT_LENGTH+1) != 0){}
   if(sscanf(choiceInput, "%d", &choice) == 1) {
-    if (choice > 3 || choice < 0) {
+    if (choice > 4 || choice < 0) {
       LOG_ERROR("Can't determine which default graph do you want to create.\n");
       return;
     }
@@ -137,6 +142,8 @@ void readCreateExampleGraph(Graph *graph) {
       case 3:
         createExampleEulerian(graph);
         break;
+      case 4:
+        createExampleDoubleNonEulerian(graph);
       default:
         break;
     }
@@ -366,5 +373,5 @@ void printHeuristicChoice() {
   printf("# %d : Simple pass random heuristic.\n", HEURISTIC_SIMPLE_RANDOM);
   printf("# %d : Multiple pass random heuristic.\n", HEURISTIC_MULTIPLE_RANDOM);
   printf("# %d : Reject max heuristic.\n", HEURISTIC_EXCLUDE_MAX);
-  printf("# %d : No heuristic (Warning : it can take a lot of time).\n", HEURISTIC_NONE);
+  printf("# %d : No heuristic (Warning : it can takes a lot of time).\n", HEURISTIC_NONE);
 }

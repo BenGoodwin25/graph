@@ -125,6 +125,8 @@ size_t isEulerian(Graph *self, size_t *eulerianResult);
  */
 void createExampleNonEulerian(Graph *self);
 
+void createExampleDoubleNonEulerian(Graph *self);
+
 /*
  * Function : create a half eulerian graph
  *
