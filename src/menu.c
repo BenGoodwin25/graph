@@ -316,7 +316,9 @@ void readDeleteEdge(Graph *graph){
 
 void readEulerianCircuit(Graph *graph) {
   char heuristicInput[MAX_DIGIT_LENGTH];
+  char nbPassInput[MAX_DIGIT_LENGTH];
   int heuristic = -1;
+  size_t nbPass = 0;
   int error = -1;
   size_t result = 10;
   isEulerian(graph, &result);
@@ -338,17 +340,31 @@ void readEulerianCircuit(Graph *graph) {
           printf("# Can't determine which heuristic to use.\n");
           return;
         }
+        if (heuristic == HEURISTIC_MULTIPLE_RANDOM) {
+          error = -1;
+          while(error != 0) {
+            printf("# How many pass do you want to apply ?\n");
+            error = readUserInput(nbPassInput, MAX_DIGIT_LENGTH+1);
+          }
+          if(sscanf(nbPassInput, "%zu", &nbPass) != 1){
+            LOG_ERROR_INT_CONVERT();
+            printf("# Can't determine how much pass you want to apply.\n");
+            return;
+          }
+        }
       }
       break;
     default:
       break;
   }
-  getEulerianCircuit(graph, heuristic, result);
+  getEulerianCircuit(graph, heuristic, result, nbPass);
 }
 
 void printHeuristicChoice() {
   printf("# Which heuristic do you want to use ?\n");
   printf("# %d : Use successfully each heuristic.\n", HEURISTIC_ALL);
-  printf("# %d : Random pick heuristic.\n", HEURISTIC_RANDOM);
+  printf("# %d : Simple pass random pick heuristic.\n", HEURISTIC_SIMPLE_RANDOM);
+  printf("# %d : Multiple pass random heuristic.\n", HEURISTIC_MULTIPLE_RANDOM);
+  printf("# %d : Reject max heuristic.\n", HEURISTIC_EXCLUDE_MAX);
   printf("# %d : No heuristic (Warning : it can take a lot of time).\n", HEURISTIC_NONE);
 }

@@ -12,7 +12,7 @@ size_t getNodeDegree(Neighbour *self);
 void print_matrix(Matrix *self);
 void convertToWeightMatrix(Graph *g, Matrix *weights);
 void convertToPredecessorMatrix(Graph *g, Matrix *predecessors);
-void graphToEulerianGraph(Graph *self, size_t heuristic);
+void graphToEulerianGraph(Graph *self, size_t heuristic, size_t nbPass);
 void duplicateEdgesFromPairwiseList(Graph *self, List *bestMatching, Matrix *predecessors);
 void union_eulerelement(EulerianList *result, size_t element);
 void union_eulerlist(EulerianList **dst, EulerianList *src);
@@ -88,13 +88,21 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors){
   return 0;
 }
 
-size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeight, Matrix *weights, size_t heuristic){
+size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeight, Matrix *weights, size_t heuristic, size_t nbPass){
   *bestMatching = NULL;
   *bestMatchingWeight = INT_MAX;
 
   LList *lpm = NULL;
   srand(time(NULL));
-  lpm = listPairs(V, NULL, lpm, heuristic);
+  if (heuristic == HEURISTIC_SIMPLE_RANDOM) {
+    lpm = listPairsSimpleRandom(V, NULL, lpm);
+  } else if (heuristic == HEURISTIC_MULTIPLE_RANDOM) {
+    lpm = listPairsMultipleRandom(V, NULL, lpm, nbPass);
+  } else if (heuristic == HEURISTIC_EXCLUDE_MAX) {
+    lpm = listPairsExcludeMax(V, NULL, lpm, weights);
+  } else {
+    lpm = listPairsNoHeuristic(V, NULL, lpm);
+  }
 
   LList *tmplpm = lpm;
   while(tmplpm != NULL) {
@@ -109,51 +117,68 @@ size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeigh
   return 0;
 }
 
-LList * listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t heuristic){
+LList * listPairsSimpleRandom(List *V, List *currentListOfPairs, LList *listsOfPairs){
   if (V == NULL) {
     addListToLists(&listsOfPairs, currentListOfPairs);
   } else {
     List *x = V;
-    if (heuristic ==  HEURISTIC_RANDOM) {
-      size_t vSize = getListSize(V);
-      List *y = x->next;
-      if (vSize > 2) {
-        double random = (double)rand() / (double)RAND_MAX;
-        size_t pairWithElement = (size_t)(random * vSize);
-        for(size_t cpt = 1; cpt < pairWithElement; cpt++) {
-          y = y->next;
-        }
+    size_t vSize = getListSize(V);
+    List *y = x->next;
+    if (vSize > 2) {
+      double random = (double)rand() / (double)RAND_MAX;
+      size_t pairWithElement = (size_t)(random * vSize);
+      for(size_t cpt = 1; cpt < pairWithElement; cpt++) {
+        y = y->next;
       }
+    }
+    List *lv = NULL;
+    cloneList(V, &lv);
+    deletePair(&lv, x->value, y->value);
+    List *clop = NULL;
+    cloneList(currentListOfPairs, &clop);
+    addPair(&clop, x->value, y->value);
+    listsOfPairs = listPairsSimpleRandom(lv, clop, listsOfPairs);
+  }
+  return listsOfPairs;
+}
+
+LList * listPairsMultipleRandom(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t nbPass){
+  for (size_t i = 0; i < nbPass; i++) {
+    listsOfPairs = listPairsSimpleRandom(V, currentListOfPairs, listsOfPairs);
+  }
+  return listsOfPairs;
+}
+
+LList * listPairsExcludeMax(List *V, List *currentListOfPairs, LList *listsOfPairs, Matrix *weights){
+  return listsOfPairs;
+}
+
+LList * listPairsNoHeuristic(List *V, List *currentListOfPairs, LList *listsOfPairs){
+  if (V == NULL) {
+    addListToLists(&listsOfPairs, currentListOfPairs);
+  } else {
+    List *x = V;
+    for (List *y = x->next; y != NULL && x->value < y->value; y = y->next) {
       List *lv = NULL;
       cloneList(V, &lv);
       deletePair(&lv, x->value, y->value);
       List *clop = NULL;
       cloneList(currentListOfPairs, &clop);
       addPair(&clop, x->value, y->value);
-      listsOfPairs = listPairs(lv, clop, listsOfPairs, heuristic);
-    } else {
-      for (List *y = x->next; y != NULL && x->value < y->value; y = y->next) {
-        List *lv = NULL;
-        cloneList(V, &lv);
-        deletePair(&lv, x->value, y->value);
-        List *clop = NULL;
-        cloneList(currentListOfPairs, &clop);
-        addPair(&clop, x->value, y->value);
-        listsOfPairs = listPairs(lv, clop, listsOfPairs, heuristic);
-      }
+      listsOfPairs = listPairsNoHeuristic(lv, clop, listsOfPairs);
     }
   }
   return listsOfPairs;
 }
 
-size_t getEulerianCircuit(Graph *self, size_t heuristic, size_t eulerianState){
+size_t getEulerianCircuit(Graph *self, size_t heuristic, size_t eulerianState, size_t nbPass){
   unlink("eulerianResults.txt");
   if (heuristic == HEURISTIC_ALL) {
     for (size_t i = 1; i < HEURISTIC_NONE; i++) {
       Graph copy = {0};
       copyGraph(self, &copy);
       if (eulerianState == GRAPH_NON_EULERIAN) {
-        graphToEulerianGraph(&copy, i);
+        graphToEulerianGraph(&copy, i, nbPass);
       }
       buildEulerianWay(&copy, i, eulerianState == GRAPH_HALF_EULERIAN);
       delete_graph(&copy);
@@ -162,7 +187,7 @@ size_t getEulerianCircuit(Graph *self, size_t heuristic, size_t eulerianState){
     Graph copy = {0};
     copyGraph(self, &copy);
     if (eulerianState == GRAPH_NON_EULERIAN) {
-      graphToEulerianGraph(&copy, heuristic);
+      graphToEulerianGraph(&copy, heuristic, nbPass);
     }
     buildEulerianWay(&copy, heuristic, eulerianState == GRAPH_HALF_EULERIAN);
     delete_graph(&copy);
@@ -368,7 +393,7 @@ void convertToPredecessorMatrix(Graph *g, Matrix *predecessors) {
   }
 }
 
-void graphToEulerianGraph(Graph *self, size_t heuristic) {
+void graphToEulerianGraph(Graph *self, size_t heuristic, size_t nbPass) {
   // find all odd degree nodes :
   List *oddDegreeNodes = NULL;
   for (size_t i = 0; i < self->nbMaxNodes; i++) {
@@ -385,7 +410,7 @@ void graphToEulerianGraph(Graph *self, size_t heuristic) {
   // get all costs of each pairwise matching for odd degree nodes
   List *bestMatching;
   size_t bestMWeight;
-  minLengthPairwise(oddDegreeNodes, &bestMatching, &bestMWeight, shortest, heuristic);
+  minLengthPairwise(oddDegreeNodes, &bestMatching, &bestMWeight, shortest, heuristic, nbPass);
   duplicateEdgesFromPairwiseList(self, bestMatching, predecessors);
 
   delete_matrix(shortest);
