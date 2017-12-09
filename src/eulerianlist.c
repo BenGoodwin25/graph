@@ -34,6 +34,18 @@ void addListToLists(LList **listsOfList, List *list) {
   tmp->next = NULL;
 }
 
+void addLListToLList(LList **self, LList *list) {
+  if (*self == NULL) {
+    *self = list;
+    return;
+  }
+  LList *tmp = *self;
+  while (tmp->next != NULL) {
+    tmp = tmp->next;
+  }
+  tmp->next = list;
+}
+
 void cloneList(List *src, List **dst) {
   if (src == NULL) {
     *dst = NULL;

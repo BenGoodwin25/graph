@@ -14,8 +14,10 @@
 #define GRAPH_NON_EULERIAN 2
 
 #define HEURISTIC_ALL 0
-#define HEURISTIC_RANDOM 1
-#define HEURISTIC_NONE 2
+#define HEURISTIC_SIMPLE_RANDOM 1
+#define HEURISTIC_MULTIPLE_RANDOM 2
+#define HEURISTIC_EXCLUDE_MAX 3
+#define HEURISTIC_NONE 4
 
 /*
  * Function : duplicate a graph to do efficient work on it
@@ -59,7 +61,7 @@ size_t Floyd_Warshall(Graph *g, Matrix *weights, Matrix *predecessors);
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeight, Matrix *weights, size_t heuristic);
+size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeight, Matrix *weights, size_t heuristic, size_t nbPass);
 
 /*
  * Function :
@@ -74,7 +76,13 @@ size_t minLengthPairwise(List *V, List **bestMatching, size_t *bestMatchingWeigh
  *  error code 1 : function couldn't be done
  *  error code 20 : function not yet implemented
  */
-LList *listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t heuristic);
+LList *listPairsSimpleRandom(List *V, List *currentListOfPairs, LList *listsOfPairs);
+
+LList * listPairsMultipleRandom(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t nbPass);
+
+LList * listPairsExcludeMax(List *V, List *currentListOfPairs, LList *listsOfPairs, Matrix *weights);
+
+LList * listPairsNoHeuristic(List *V, List *currentListOfPairs, LList *listsOfPairs);
 
 /*
  * Function : get Eulerian circuit, display it and write it on a file
@@ -88,7 +96,7 @@ LList *listPairs(List *V, List *currentListOfPairs, LList *listsOfPairs, size_t 
  *  error code 1 : create couldn't be executed
  *  error code 20 : function not yet implemented
  */
-size_t getEulerianCircuit(Graph *self, size_t heuristic, size_t eulerianState);
+size_t getEulerianCircuit(Graph *self, size_t heuristic, size_t eulerianState, size_t nbPass);
 
 /*
  * Function : check if a graph is eulerian or not
