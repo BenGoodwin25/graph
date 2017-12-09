@@ -1,5 +1,3 @@
 TODO
 ___
-- Implement heuristics
-- Maybe optimize?
-- Other things
+- Nothing more for this project
