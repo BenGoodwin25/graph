@@ -7,6 +7,7 @@
 
 #include <log.h>
 
+/* structure to save neighbours of a graph */
 typedef struct _neighbour {
   int neighbour;
   int edgeName;
@@ -14,6 +15,15 @@ typedef struct _neighbour {
 	struct _neighbour *nextNeighbour;
 } Neighbour;
 
+/*
+ * Function : Check if an edge exists in the list
+ *
+ * Param :
+ *  self : the list where the check have to be applied
+ *  edgeName : the name of the edge to check
+ *
+ * Return : true if the edge exists, false otherwise
+ */
 bool edgeExist(Neighbour *self, int edgeName);
 
 //ajout

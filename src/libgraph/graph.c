@@ -33,7 +33,7 @@ int create_graph(Graph *self, size_t maxNodes, bool isDirected){
 
 //load a graph from a file
 int load_graph(Graph *self, const char *graphFile){
-#define BUFFER_SIZE 255
+  #define BUFFER_SIZE 255
   // Graph related vars
   int nbMaxNodes = -1;
   bool isDirected = false;
