@@ -8,20 +8,147 @@
 /** INTERNAL FILE FUNCTIONS DECLARATION **/
 /*****************************************/
 
+/*
+ * Function : compute the node degree
+ *
+ * Param :
+ *  self : the list of neighbors of the node
+ *
+ * Return : the node degree of the graph
+ */
 size_t getNodeDegree(Neighbour *self);
+
+/*
+ * Function : output the given matrix in the terminal
+ *
+ * Param :
+ *  self : the matrix to output in the terminal
+ */
 void print_matrix(Matrix *self);
+
+/*
+ * Function : convert the graph in a weight matrix
+ *
+ * Param :
+ *  g : the graph containing weights
+ *  weights : the result matrix containing the weights of the graph
+ */
 void convertToWeightMatrix(Graph *g, Matrix *weights);
+
+/*
+ * Function : convert the graph in a matrix of predecessors
+ *
+ * Param :
+ *  g : the graph to convert in a predecessor matrix
+ *  predecessors : the result matrix containing the predecessors of the graph
+ */
 void convertToPredecessorMatrix(Graph *g, Matrix *predecessors);
+
+/*
+ * Function : convert a connected graph into an eulerian graph
+ *
+ * Param :
+ *  self : the connected graph to convert
+ *  heuristic : the heuristic to apply for converting the graph
+ *  nbPass : if the heuristic is the multiple random, then th number of iteration to execute random heuristic
+ */
 void graphToEulerianGraph(Graph *self, size_t heuristic, size_t nbPass);
+
+/*
+ * Function : duplicates edges in the graph from the given best matching pairs
+ *
+ * Param :
+ *  self : the graph where the edges will be doubled
+ *  bestMatching : the best matching pairs to duplicate
+ *  predecessors : the matrix containing the ways between each pairs
+ */
 void duplicateEdgesFromPairwiseList(Graph *self, List *bestMatching, Matrix *predecessors);
+
+/*
+ * Function : concat an element to the list
+ *
+ * Param :
+ *  result : the list that will contains the new element
+ *  element : the element to add to the list
+ */
 void union_eulerelement(EulerianList *result, size_t element);
+
+/*
+ * Function : concat two list
+ *
+ * Param :
+ *  dst : the destination that will handle the new list
+ *  src : the new list to add to the destination
+ */
 void union_eulerlist(EulerianList **dst, EulerianList *src);
+
+/*
+ * Function : compute the size of the list
+ *
+ * Param :
+ *  list : the list to compute the size
+ *
+ * Return : the size of the given list
+ */
 size_t size(EulerianList *list);
+
+/*
+ * Function : get the total weight of a pariwise matching
+ *
+ * Param :
+ *  pm : the pairwise matching to compute
+ *  weights : the weights of all pairs
+ *
+ * Return : the total weight of the pairwise matching
+ */
 size_t getPMWeight(List *pm, Matrix *weights);
+
+/*
+ * Function : Get the last edge name
+ *
+ * Param :
+ *  self : the graph to find the last edge name
+ *
+ * Return : the last edge name of the graph
+ */
 int getMaxEdgeName(Graph *self);
+
+/*
+ * Function : go throught all edges of the graph
+ *
+ * Param :
+ *  graph : the graph to parse edges
+ *  x : the start node of the parsing
+ *
+ * Return : a list containing trails between nodes based on existing edges
+ */
 EulerianList* parse(Graph *graph, size_t x);
+
+/*
+ * Function : parse all graph's edge to store the weight between nodes in the eulerian trail
+ *
+ * Param :
+ *  graph : the graph containing all weighted edges
+ *  path : the eulerian trail that need the weights from the graph
+ */
 void rebuildPathWeight(Graph *graph, EulerianPath *path);
+
+/*
+ * Function : Construct an eulerian trail from the given graph
+ *
+ * Param :
+ *  graph : the graph on which we will construct the eulerian trail
+ *  heuristicNumber : the heuristic used to convert the graph into an eulerian graph
+ *  isHalfEulerian : boolean defining if the graph is half eulerian or not
+ */
 void buildEulerianWay(Graph *graph, size_t heuristicNumber, bool isHalfEulerian);
+
+/*
+ * Function : delete the given matrix
+ *
+ * Param :
+ *  self : the matrix to delete
+ */
 void deleteMatrix(Matrix *self);
 
 /**********************/

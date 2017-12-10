@@ -9,6 +9,11 @@
 #include <graph.h>
 #include <log.h>
 
+/*
+ * the structure that represent a matrix
+ * maxNodes : the size of the matrix
+ * value : 2D array contaning values
+ */
 typedef struct _matrix{
   size_t maxNodes;
   int **value;
@@ -20,12 +25,10 @@ typedef struct _matrix{
  * Param :
  *  self : the matrix to create
  *  maxNodes : the number nodes maximum (size of the matrix)
- *  isDirected : is the graph directed
  *
  * Return :
  *  error code 0 : create correctly executed
  *  error code 1 : create couldn't be executed
- *  error code 20 : function not yet implemented
  */
 size_t create_matrix(Matrix *self, size_t maxNodes);
 
@@ -37,24 +40,8 @@ size_t create_matrix(Matrix *self, size_t maxNodes);
  *
  * Return :
  *  error code 0 : delete correctly executed
- *  error code 1 : delete couldn't be executed
- *  error code 20 : function not yet implemented
  */
 size_t delete_matrix(Matrix *self);
-
-/*
- * Function : creation of a predecessor matrix
- *
- * Param :
- *  self : the matrix to create
- *  predecessor : the predecessor matrix of self
- *
- * Return :
- *  error code 0 : predecessor correctly executed
- *  error code 1 : predecessor couldn't be executed
- *  error code 20 : function not yet implemented
- */
-size_t create_predecessor(Matrix *self, Matrix *predecessor);
 
 /*
  * Function : copy of a matrix
@@ -65,8 +52,6 @@ size_t create_predecessor(Matrix *self, Matrix *predecessor);
  *
  * Return :
  *  error code 0 : predecessor correctly executed
- *  error code 1 : predecessor couldn't be executed
- *  error code 20 : function not yet implemented
  */
 size_t copy_matrix(Matrix *src, Matrix *dst);
 

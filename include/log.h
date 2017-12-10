@@ -4,11 +4,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+/* definition of constant log levels */
 #define LOG_LEVEL_FATAL 1
 #define LOG_LEVEL_ERROR 2
 #define LOG_LEVEL_WARN  3
 #define LOG_LEVEL_INFO  4
 
+/* function to log the given message */
 static inline void log_message(int level, const char *format, ...){
   va_list args;
   switch (level) {
@@ -31,6 +33,10 @@ static inline void log_message(int level, const char *format, ...){
   vfprintf(stdout, format, args);
   va_end(args);
 }
+
+/*
+ * Define the visibility of the log
+ */
 
 #ifndef LOG_LEVEL
 #define LOG_LEVEL LOG_LEVEL_INFO

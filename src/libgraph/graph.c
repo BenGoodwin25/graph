@@ -1,9 +1,25 @@
 #include <graph.h>
 
+/*
+ * Function : check if a given node is out of bounds
+ *
+ * Param :
+ *  self : the graph where the check will be done
+ *  nodeName : the name of the node to check
+ *
+ * Return : true if the node is out of bounds, false otherwise
+ */
 bool is_node_oob(Graph *self, size_t nodeName){
   return self->nbMaxNodes < nodeName;
 }
 
+/*
+ * Function : Remove a substring from a given string
+ *
+ * Param :
+ *  s : the string where the substring will be removed
+ *  toremove : the substring to remove from the string
+ */
 void removeSubstring(char *s,const char *toremove) {
   if(s != NULL){
     while( (s=strstr(s,toremove)) != NULL ) {
@@ -12,8 +28,6 @@ void removeSubstring(char *s,const char *toremove) {
   }
 }
 
-//create a graph with the right number of nodes
-// error 1 : unexpected allocation error
 int create_graph(Graph *self, size_t maxNodes, bool isDirected){
   if(self->nbMaxNodes > 0){
     delete_graph(self);
@@ -31,7 +45,6 @@ int create_graph(Graph *self, size_t maxNodes, bool isDirected){
   return 0;
 }
 
-//load a graph from a file
 int load_graph(Graph *self, const char *graphFile){
   #define BUFFER_SIZE 255
   // Graph related vars
@@ -122,10 +135,6 @@ int load_graph(Graph *self, const char *graphFile){
   return 0;
 }
 
-//add a node
-// error 1 : node OOB
-// error 2 : unexpected allocation error
-// error 3 : error node name
 int add_node(Graph *self, int nodeName){
   if(nodeName <= 0) {
     LOG_ERROR("Can't create a node named 0 or less\n");
@@ -150,10 +159,6 @@ int add_node(Graph *self, int nodeName){
   return 0;
 }
 
-//add an edge
-// error 8 : From node doesn't exists
-// error 9 : To node doesn't exists
-// error 10 : Edge already exists
 int add_edge(Graph *self, int fromName, int toName, int edgeName, int Weight, bool isSymmetric){
   // Recompute to get the real names
   fromName--;
@@ -190,12 +195,10 @@ int add_edge(Graph *self, int fromName, int toName, int edgeName, int Weight, bo
   }
 }
 
-// Check if a node already exists
 bool is_node_exists(Graph* self, int nodeName){
   return self->adjList[nodeName] != NULL;
 }
 
-// Check if an edge already exists
 bool is_edge_exists(Graph* self, int edgeName){
   for(size_t i = 0; i < self->nbMaxNodes; i++){
     if(is_node_exists(self, i)){
@@ -207,9 +210,6 @@ bool is_edge_exists(Graph* self, int edgeName){
   return false;
 }
 
-//Delete a node
-// error 9 : Node is OOB
-// error 10 : Node unknown
 int remove_node(Graph *self, int nodeName){
   nodeName--;
   if(is_node_oob(self, nodeName)){
@@ -235,6 +235,17 @@ int remove_node(Graph *self, int nodeName){
   return 0;
 }
 
+/*
+ * Function : Check if there is no error in the given array
+ *
+ * Param :
+ *  errors : the array containing errors code
+ *  size : the size of the array
+ *
+ * Return :
+ *  value 0 : the array contains a no error
+ *  value 1 : the array is fill with errors
+ */
 int hasNoErrorInArray(int errors[], int size) {
   for (int i = 0; i < size; i++) {
     if(errors[i] == 0) {
@@ -244,7 +255,6 @@ int hasNoErrorInArray(int errors[], int size) {
   return 1;
 }
 
-//Delete an edge
 int remove_edge(Graph *self, int edgeName){
   int error[self->nbMaxNodes];
   for(size_t i = 0; i < self->nbMaxNodes; i++){
@@ -255,6 +265,16 @@ int remove_edge(Graph *self, int edgeName){
   return hasNoErrorInArray(error, self->nbMaxNodes);
 }
 
+/*
+ * Function : Output the graph in the goiven stream
+ *
+ * Param :
+ *  self : the graph to output
+ *  stream : a pointer to the stream where the graph will be output
+ *
+ * Return :
+ *  value 0 : the graph has been output successfully
+ */
 int output_graph_to_stream(Graph *self, FILE *stream){
   fputs("# maximum number of node\n", stream);
   fprintf(stream, "%zu\n", self->nbMaxNodes);
@@ -276,7 +296,6 @@ int output_graph_to_stream(Graph *self, FILE *stream){
   return 0;
 }
 
-//Display a graph
 int view_graph(Graph *self){
   if(self->nbMaxNodes <= 0){
     LOG_ERROR("Graph have to be initialized!\n");
@@ -285,7 +304,6 @@ int view_graph(Graph *self){
   return output_graph_to_stream(self, stdout);
 }
 
-//Save the graph into a file
 int save_graph(Graph *self, const char *graphFile){
   FILE *file = fopen(graphFile, "w");
   if(!file){
@@ -298,7 +316,6 @@ int save_graph(Graph *self, const char *graphFile){
   return error;
 }
 
-//Free graph and quit
 int delete_graph(Graph *self){
   if(self != NULL && self->nbMaxNodes > 0){
     if(self->adjList != NULL){
