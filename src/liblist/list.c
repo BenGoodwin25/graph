@@ -12,9 +12,6 @@ bool edgeExist(Neighbour *self, int edgeName){
   return false;
 }
 
-//add a node
-// error 1 : Edge already exist
-// error 2 : unexpected allocation error
 int addEdge(Neighbour **self, int neighbourTo, int edgeName, int Weight){
   if(edgeExist(*self, edgeName)){
     printf("Edge already exist\n");
@@ -33,8 +30,6 @@ int addEdge(Neighbour **self, int neighbourTo, int edgeName, int Weight){
   return 0;
 }
 
-//
-// Error $deleteEdge()$ : code of deleteEdge
 int deleteEdgeFromNodeName(Neighbour** self, int nodeName){
   int error;
   Neighbour *tmp = *self;
@@ -48,8 +43,6 @@ int deleteEdgeFromNodeName(Neighbour** self, int nodeName){
   return error;
 }
 
-//
-// error 1 : Edge doesn't exist
 int deleteEdge(Neighbour** self, int edgeName){
   Neighbour *tmp=*self;
   if(tmp->edgeName == edgeName){
@@ -74,8 +67,6 @@ int deleteEdge(Neighbour** self, int edgeName){
   }
 }
 
-//add a node
-// error 1 : Edge doesn't exist
 int delFirstEdge(Neighbour** self){
   Neighbour *tmp=*self;
   if(!isEmptyList(tmp)){
