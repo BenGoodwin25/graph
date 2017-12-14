@@ -651,11 +651,12 @@ void union_eulerlist(EulerianList **dst, EulerianList *src) {
     return;
   }
   EulerianList *destination = *dst;
-  while (destination->node != src->node) {
+  while (destination->next->node != src->node) {
     destination = destination->next;
   }
-  EulerianList *tmp = destination->next;
-  destination = src;
+  EulerianList *tmp = destination->next->next;
+  destination->next = src;
+  destination = destination->next;
   while (src->next != NULL) {
     src = src->next;
   }
