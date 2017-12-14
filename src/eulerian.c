@@ -151,6 +151,24 @@ void buildEulerianWay(Graph *graph, size_t heuristicNumber, bool isHalfEulerian)
  */
 void deleteMatrix(Matrix *self);
 
+/*
+ * Function : save the graph into a dot file
+ *
+ * Param :
+ *  self : the graph to save
+ *  fileName : the file name for the dot file
+ */
+void outputGraphToDotFile(Graph *self, char *fileName);
+
+/*
+ * Function : save the eulerian trail into a dat file
+ *
+ * Param :
+ *  self : the eulerian trail to save
+ *  fileName : the file name for the dot file
+ */
+void outputTrailToDotFile(EulerianPath *self, char *fileName);
+
 /**********************/
 /** PUBLIC FUNCTIONS **/
 /**********************/
@@ -312,6 +330,7 @@ LList * listPairsNoHeuristic(List *V, List *currentListOfPairs, LList *listsOfPa
 
 size_t getEulerianCircuit(Graph *self, size_t heuristic, size_t eulerianState, size_t nbPass){
   unlink("eulerianResults.txt");
+  outputGraphToDotFile(self, "initialGraph.dot");
   if (heuristic == HEURISTIC_ALL) {
     for (size_t i = 1; i < HEURISTIC_NONE; i++) {
       Graph copy = {0};
@@ -510,7 +529,7 @@ void createExampleEulerian(Graph *self) {
 }
 
 void output_result(EulerianPath *path, FILE *stream) {
-  fprintf(stream, "H(%d) = %zu : ", path->heuristicNumber, path->totalWeight);
+  fprintf(stream, "H(%d) = %zu : ", path->heuristicNumber == INT_MAX ? 0 : path->heuristicNumber, path->totalWeight);
   EulerianList *pathList = path->start;
   while(pathList->next != NULL) {
     fprintf(stream, "%zu --(%zu)--> ", pathList->node+1, pathList->weight);
@@ -586,6 +605,10 @@ void graphToEulerianGraph(Graph *self, size_t heuristic, size_t nbPass) {
   size_t bestMWeight;
   minLengthPairwise(oddDegreeNodes, &bestMatching, &bestMWeight, shortest, heuristic, nbPass);
   duplicateEdgesFromPairwiseList(self, bestMatching, predecessors);
+
+  char fileName[sizeof("DuplicatedEdgesGraphHeuristic1.dot")];
+  sprintf(fileName, "DuplicatedEdgesGraphHeuristic%1zu.dot", heuristic);
+  outputGraphToDotFile(self, fileName);
 
   delete_matrix(shortest);
   delete_matrix(predecessors);
@@ -728,6 +751,14 @@ void buildEulerianWay(Graph *graph, size_t heuristicNumber, bool isHalfEulerian)
   rebuildPathWeight(graph, &result);
   // output result to stdout
   output_result(&result, stdout);
+  // output result in a dot file
+  char fileName[sizeof("EulerianTrailHeuristic1.dot")];
+  if (heuristicNumber != INT_MAX) {
+    sprintf(fileName, "EulerianTrailHeuristic%1zu.dot", heuristicNumber);
+  } else {
+    sprintf(fileName, "EulerianTrailHeuristic%1d.dot", 0);
+  }
+  outputTrailToDotFile(&result, fileName);
   // output result to file
   FILE *file = fopen("eulerianResults.txt", "a");
   if(!file){
@@ -745,4 +776,41 @@ void deleteMatrix(Matrix *self){
   }
   free(self->value);
   free(self);
+}
+
+void outputGraphToDotFile(Graph *self, char *fileName) {
+  FILE *file = fopen(fileName, "w");
+
+  fprintf(file, "graph g {\n");
+  List *edgesDone = NULL;
+  for (size_t i = 0; i < self->nbMaxNodes; i++) {
+    if (is_node_exists(self, i)) {
+      Neighbour *tmp = self->adjList[i];
+      while (tmp->neighbour != -1) {
+        if (!isInList(edgesDone, tmp->edgeName)) {
+          fprintf(file, "\t%zu -- %d [label=\"%d\"];\n", i+1, tmp->neighbour+1, tmp->weight);
+          addToList(&edgesDone, tmp->edgeName);
+        }
+        tmp = tmp->nextNeighbour;
+      }
+    }
+  }
+  fprintf(file, "}");
+
+  fclose(file);
+}
+
+void outputTrailToDotFile(EulerianPath *self, char *fileName) {
+  FILE *file = fopen(fileName, "w");
+
+  fprintf(file, "digraph g {\n");
+  EulerianList *pathList = self->start;
+  fprintf(file, "\t%zu [shape=box];\n", pathList->node+1);
+  while(pathList->next != NULL) {
+    fprintf(file, "\t%zu -> %zu [label=\"%zu\"];\n", pathList->node+1, pathList->next->node+1, pathList->weight);
+    pathList = pathList->next;
+  }
+  fprintf(file, "}");
+
+  fclose(file);
 }

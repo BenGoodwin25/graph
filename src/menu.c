@@ -1,4 +1,5 @@
 #include <menu.h>
+#include <limits.h>
 
 void flushReadBuffer() {
   int c = 0;
@@ -324,7 +325,7 @@ void readDeleteEdge(Graph *graph){
 void readEulerianCircuit(Graph *graph) {
   char heuristicInput[MAX_DIGIT_LENGTH];
   char nbPassInput[MAX_DIGIT_LENGTH];
-  int heuristic = -1;
+  int heuristic = INT_MAX;
   size_t nbPass = 0;
   int error = -1;
   size_t result = 10;
