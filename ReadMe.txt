@@ -40,4 +40,4 @@ This project contains multiple functions on graph such as :
 - purpose a Chinese Postman trail with pairwise matching
 - let you choose the heuristic to apply to compute the optimal pairwise matching
 - create dot files while computing the eulerian trail to get a nice representation of graphs
-
+- purpose multiple example graph on the option 0 of the main menu
